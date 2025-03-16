@@ -1,26 +1,34 @@
 package com.github.wezzen.insight.model;
 
-import java.util.*;
+import jakarta.persistence.*;
+import lombok.*;
 
+import java.util.Date;
+import java.util.Set;
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
+@Table(name = "notes")
 public class Note {
-    public final UUID id;
-    public final String category;
-    public final String content;
-    public final Date createdAt;
-    public final List<String> tags;
-    public final Date reminder;
-
-    public Note(final String category, final String content, final List<String> tags, final Date reminder) {
-        this.id = UUID.randomUUID();
-        this.category = category;
-        this.content = content;
-        this.createdAt = new Date();
-        this.tags = tags != null ? tags : new ArrayList<>();
-        this.reminder = reminder;
-    }
-
-    @Override
-    public String toString() {
-        return "[" + category + "] " + content + " Tags: " + tags + " Reminder: " + reminder + " (" + createdAt + ")";
-    }
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    private long id;
+    private String content;
+    @ManyToOne
+    @JoinColumn(name = "category_name")
+    private Category category;
+    private Date createdAt;
+    @ManyToMany
+    @JoinTable(
+            name = "notes_tags",
+            joinColumns = @JoinColumn(name = "note_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_name")
+    )
+    private Set<Tag> tags;
+    private Date reminder;
 }

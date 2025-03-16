@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("net.ltgt.errorprone") version "4.1.0"
+    id("io.freefair.lombok") version "8.6"
     id("org.springframework.boot") version "3.4.3" apply false
     id ("io.spring.dependency-management") version "1.1.7"
     jacoco
@@ -12,6 +13,8 @@ version = "0.0.1"
 allprojects {
     apply(plugin = "java")
     apply(plugin = "jacoco")
+    apply(plugin = "io.freefair.lombok")
+
 
 
     repositories {
