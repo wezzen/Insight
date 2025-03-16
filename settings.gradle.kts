@@ -1,5 +1,8 @@
 rootProject.name = "Insight"
 
+include("app")
+project(":app").projectDir = file("modules/app")
+
 include("controller")
 project(":controller").projectDir = file("modules/controller")
 

@@ -27,10 +27,13 @@ allprojects {
         implementation("org.springframework.boot:spring-boot-starter-web:3.4.3")
         implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.4.3")
         implementation("org.springframework.boot:spring-boot-starter-thymeleaf:3.4.3")
-        testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.3")
 
+        implementation("com.h2database:h2:2.3.232")
+
+        testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.3")
         testImplementation(platform("org.junit:junit-bom:5.10.0"))
         testImplementation("org.junit.jupiter:junit-jupiter")
+        testRuntimeOnly("org.junit.platform:junit-platform-launcher")
         testImplementation("org.mockito:mockito-core:5.3.1")
     }
 
