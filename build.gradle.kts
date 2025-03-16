@@ -1,37 +1,55 @@
 plugins {
     id("java")
     id("net.ltgt.errorprone") version "4.1.0"
+    id("org.springframework.boot") version "3.4.3" apply false
+    id ("io.spring.dependency-management") version "1.1.7"
     jacoco
 }
 
-group = "com.github.wezzen"
-version = "1.0-SNAPSHOT"
+group = "com.github.wezzen.insight"
+version = "0.0.1"
 
-repositories {
-    mavenCentral()
-}
+allprojects {
+    apply(plugin = "java")
+    apply(plugin = "jacoco")
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
 
-dependencies {
-    testImplementation(platform("org.junit:junit-bom:5.10.0"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    errorprone("com.google.errorprone:error_prone_core:2.36.0")
-}
+    repositories {
+        mavenCentral()
+    }
 
-tasks.test {
-    useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
-}
+    java {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
 
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required.set(true)
-        csv.required.set(false)
-        html.required.set(false)
+    dependencies {
+        implementation("org.springframework.boot:spring-boot-starter-web:3.4.3")
+        implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.4.3")
+        implementation("org.springframework.boot:spring-boot-starter-thymeleaf:3.4.3")
+        testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.3")
+
+        testImplementation(platform("org.junit:junit-bom:5.10.0"))
+        testImplementation("org.junit.jupiter:junit-jupiter")
+        testImplementation("org.mockito:mockito-core:5.3.1")
+    }
+
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
+    }
+
+    tasks.test {
+        useJUnitPlatform()
+        finalizedBy(tasks.jacocoTestReport)
+    }
+
+    tasks.jacocoTestReport {
+        dependsOn(tasks.test)
+        reports {
+            xml.required.set(true)
+            csv.required.set(false)
+            html.required.set(false)
+        }
     }
 }
+
