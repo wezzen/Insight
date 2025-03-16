@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/modules/app" />
             <option value="$PROJECT_DIR$/modules/controller" />
+            <option value="$PROJECT_DIR$/modules/dto" />
             <option value="$PROJECT_DIR$/modules/model" />
             <option value="$PROJECT_DIR$/modules/repository" />
             <option value="$PROJECT_DIR$/modules/service" />
