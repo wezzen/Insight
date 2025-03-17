@@ -12,10 +12,11 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode
+@EqualsAndHashCode(of = "tag")
 @Table(name = "tags")
 public class Tag {
     @Id
+    @Setter(AccessLevel.NONE)
     private String tag;
 
     @ManyToMany(mappedBy = "tags")
