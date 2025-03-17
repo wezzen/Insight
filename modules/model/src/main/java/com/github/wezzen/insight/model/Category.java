@@ -17,6 +17,7 @@ import java.util.Set;
 @Table(name = "categories")
 public class Category {
     @Id
+    @Setter(AccessLevel.NONE)
     private String name;
 
     @OneToMany(mappedBy = "category")

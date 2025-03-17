@@ -14,4 +14,14 @@ class CategoryTest {
         assertEquals(new Category("Category"), category);
     }
 
+    @Test
+    void equalsTest() {
+        Category category1 = new Category("Work");
+        Category category2 = new Category("Work");
+        Category category3 = new Category("Home");
+
+        assertEquals(category1, category2);
+        assertNotEquals(category1, category3);
+    }
+
 }

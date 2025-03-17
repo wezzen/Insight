@@ -32,4 +32,14 @@ class NoteTest {
         assertEquals(Date.from(Instant.ofEpochMilli(remindTime)), note.getReminder());
     }
 
+    @Test
+    void equalsTest() {
+        final Note note1 = new Note();
+        note1.setContent("Note 1");
+        final Note note2 = new Note();
+        note2.setContent("Note 1");
+        final Note note3 = new Note();
+        note3.setContent("Note 2");
+    }
+
 }
