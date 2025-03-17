@@ -1,4 +1,4 @@
-package com.github.wezzen.insight;
+package com.github.wezzen.insight.service;
 
 import com.github.wezzen.insight.model.Tag;
 import com.github.wezzen.insight.repository.TagRepository;
