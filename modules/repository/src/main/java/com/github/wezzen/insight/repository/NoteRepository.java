@@ -1,5 +1,6 @@
 package com.github.wezzen.insight.repository;
 
+import com.github.wezzen.insight.model.Category;
 import com.github.wezzen.insight.model.Note;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -31,4 +32,11 @@ public interface NoteRepository extends CrudRepository<Note, Long> {
         HAVING COUNT(DISTINCT t.tag) = :size
     """)
     List<Note> findByTagNames(@Param("tagNames") final Set<String> tagNames, @Param("size") final long size);
+
+    /**
+     * get a list of notes that belongs to the {@param category}
+     * @return list of Notes with category
+     */
+    @Query("SELECT n FROM Note n JOIN n.category c WHERE c.name = :category")
+    List<Note> findAllByCategory(@Param("category") final String category);
 }

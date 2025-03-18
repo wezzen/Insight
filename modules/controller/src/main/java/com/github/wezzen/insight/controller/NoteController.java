@@ -62,12 +62,16 @@ public class NoteController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<NoteDTO>> searchNotes(@RequestParam(name = "tags") final Set<String> tags,
-                                                     @RequestParam(name = "mode", defaultValue = "any") final String mode) {
+    @GetMapping("/s/tags")
+    public ResponseEntity<List<NoteDTO>> searchNotesByTags(@RequestParam(name = "tags") final Set<String> tags,
+                                                           @RequestParam(name = "mode", defaultValue = "any") final String mode) {
         final NoteByTagsMode notesByMode = NoteByTagsMode.valueOf(mode.toUpperCase());
         return ResponseEntity.ok(noteService.findByTags(tags, notesByMode));
     }
 
+    @GetMapping("/s/category")
+    public ResponseEntity<List<NoteDTO>> searchNotesByCategory(@RequestParam(name = "category") final String category) {
+        return ResponseEntity.ok(noteService.findByCategory(category));
+    }
 
 }

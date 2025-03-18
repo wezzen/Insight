@@ -73,6 +73,20 @@ public class NoteService {
         return dtos;
     }
 
+    public List<NoteDTO> findByCategory(final String category) {
+        final List<NoteDTO> dtos = new ArrayList<>();
+        for (final Note note : noteRepository.findAllByCategory(category)) {
+            dtos.add(new NoteDTO(
+                    note.getCategory().getName(),
+                    note.getContent(),
+                    note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
+                    note.getCreatedAt().toString(),
+                    note.getReminder().toString())
+            );
+        }
+        return dtos;
+    }
+
     public List<NoteDTO> findByTags(final Set<String> tags, final NoteByTagsMode mode) {
         final List<NoteDTO> dtos = new ArrayList<>();
         final List<Note> notes = mode == NoteByTagsMode.ALL
