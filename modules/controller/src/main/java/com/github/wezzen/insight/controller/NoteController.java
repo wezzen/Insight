@@ -1,7 +1,7 @@
 package com.github.wezzen.insight.controller;
 
 import com.github.wezzen.insight.dto.response.NoteDTO;
-import com.github.wezzen.insight.model.Tag;
+import com.github.wezzen.insight.service.NoteByTagsMode;
 import com.github.wezzen.insight.service.NoteService;
 import com.github.wezzen.insight.dto.request.CreateNoteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,5 +61,13 @@ public class NoteController {
         noteService.deleteNote(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<NoteDTO>> searchNotes(@RequestParam(name = "tags") final Set<String> tags,
+                                                     @RequestParam(name = "mode", defaultValue = "any") final String mode) {
+        final NoteByTagsMode notesByMode = NoteByTagsMode.valueOf(mode.toUpperCase());
+        return ResponseEntity.ok(noteService.findByTags(tags, notesByMode));
+    }
+
 
 }

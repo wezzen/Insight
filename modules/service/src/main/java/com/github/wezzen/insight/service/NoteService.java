@@ -73,6 +73,23 @@ public class NoteService {
         return dtos;
     }
 
+    public List<NoteDTO> findByTags(final Set<String> tags, final NoteByTagsMode mode) {
+        final List<NoteDTO> dtos = new ArrayList<>();
+        final List<Note> notes = mode == NoteByTagsMode.ALL
+                ? noteRepository.findByTagNames(tags, tags.size())
+                : noteRepository.findByAnyTagName(tags);
+        for (final Note note : notes) {
+            dtos.add(new NoteDTO(
+                    note.getCategory().getName(),
+                    note.getContent(),
+                    note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
+                    note.getCreatedAt().toString(),
+                    note.getReminder().toString())
+            );
+        }
+        return dtos;
+    }
+
     @Transactional
     public NoteDTO updateNote(final long id, final Category category, final String content, final Set<Tag> tags,
                            final Date reminder) {
