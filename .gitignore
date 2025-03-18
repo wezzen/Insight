@@ -29,7 +29,7 @@ gradle-app.setting
 gradle-app.setting.bak
 
 ### IntelliJ IDEA ###
-.idea/
+.idea
 *.iws
 *.ipr
 out/
