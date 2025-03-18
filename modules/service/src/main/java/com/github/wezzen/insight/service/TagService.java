@@ -1,11 +1,13 @@
 package com.github.wezzen.insight.service;
 
+import com.github.wezzen.insight.dto.response.TagDTO;
 import com.github.wezzen.insight.model.Tag;
 import com.github.wezzen.insight.repository.TagRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -19,15 +21,20 @@ public class TagService {
     }
 
     @Transactional
-    public Tag createTag(final String tag) {
+    public TagDTO createTag(final String tag) {
         if (tagRepository.findById(tag).isPresent()) {
             throw new RuntimeException("Tag " + tag + " already exists");
         }
-        return tagRepository.save(new Tag(tag));
+        final Tag saved = tagRepository.save(new Tag(tag));
+        return new TagDTO(saved.getTag());
     }
 
-    public List<Tag> getAllTags() {
-        return (List<Tag>) tagRepository.findAll();
+    public List<TagDTO> getAllTags() {
+        final List<TagDTO> dtos = new ArrayList<>();
+        for (final Tag tag : tagRepository.findAll()) {
+            dtos.add(new TagDTO(tag.getTag()));
+        }
+        return dtos;
     }
 
     @Transactional

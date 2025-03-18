@@ -1,13 +1,15 @@
 package com.github.wezzen.insight.controller;
 
+import com.github.wezzen.insight.dto.response.NoteDTO;
+import com.github.wezzen.insight.model.Tag;
 import com.github.wezzen.insight.service.NoteService;
-import com.github.wezzen.insight.dto.CreateNoteRequest;
-import com.github.wezzen.insight.model.Note;
+import com.github.wezzen.insight.dto.request.CreateNoteRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/notes")
@@ -21,29 +23,29 @@ public class NoteController {
     }
 
     @PostMapping
-    public ResponseEntity<Note> addNewNote(@RequestBody final CreateNoteRequest request) {
-        final Note note = noteService.createNote(
+    public ResponseEntity<NoteDTO> addNewNote(@RequestBody final CreateNoteRequest request) {
+        final NoteDTO dto = noteService.createNote(
                 request.category,
                 request.content,
                 request.tags,
                 request.reminder
         );
-        return ResponseEntity.ok(note);
+        return ResponseEntity.ok(dto);
     }
 
     @GetMapping
-    public ResponseEntity<List<Note>> getALlNotes() {
-        final List<Note> notes = noteService.getAllNotes();
+    public ResponseEntity<List<NoteDTO>> getALlNotes() {
+        final List<NoteDTO> notes = noteService.getAllNotes();
         return ResponseEntity.ok(notes);
     }
 
     // 3. Обновление записи
     @PutMapping("/{id}")
-    public ResponseEntity<Note> updateNote(
+    public ResponseEntity<NoteDTO> updateNote(
             @PathVariable long id,
             @RequestBody CreateNoteRequest request
     ) {
-        Note updatedNote = noteService.updateNote(
+        final NoteDTO updatedNote = noteService.updateNote(
                 id,
                 request.category,
                 request.content,
@@ -55,7 +57,7 @@ public class NoteController {
 
     // 4. Удаление записи
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNote(@PathVariable long id) {
+    public ResponseEntity<Void> deleteNote(@PathVariable("id") long id) {
         noteService.deleteNote(id);
         return ResponseEntity.noContent().build();
     }

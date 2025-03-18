@@ -1,5 +1,6 @@
 package com.github.wezzen.insight.dto;
 
+import com.github.wezzen.insight.dto.request.CreateNoteRequest;
 import com.github.wezzen.insight.model.Category;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

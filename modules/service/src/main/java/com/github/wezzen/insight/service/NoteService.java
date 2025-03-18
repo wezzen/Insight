@@ -1,5 +1,6 @@
 package com.github.wezzen.insight.service;
 
+import com.github.wezzen.insight.dto.response.NoteDTO;
 import com.github.wezzen.insight.model.Category;
 import com.github.wezzen.insight.model.Note;
 import com.github.wezzen.insight.model.Tag;
@@ -10,10 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class NoteService {
@@ -34,10 +33,10 @@ public class NoteService {
     }
 
     @Transactional
-    public Note createNote(final Category category, final String content, final Set<Tag> tags, final Date reminder) {
+    public NoteDTO createNote(final Category category, final String content, final Set<Tag> tags, final Date reminder) {
         final Category synCategory = categoryRepository.findById(category.getName()).orElseGet(() -> categoryRepository.save(category));
 
-        final Set<Tag> synTags = new HashSet<>(tags);
+        final Set<Tag> synTags = new HashSet<>();
         for (final Tag tag : tags) {
             final Tag synTag = tagRepository.findById(tag.getTag()).orElseGet(() -> tagRepository.save(tag));
             synTags.add(synTag);
@@ -50,15 +49,32 @@ public class NoteService {
         note.setReminder(reminder);
         note.setCreatedAt(new Date());
 
-        return noteRepository.save(note);
+        final Note saved = noteRepository.save(note);
+        return new NoteDTO(
+                saved.getCategory().getName(),
+                saved.getContent(),
+                saved.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
+                saved.getCreatedAt().toString(),
+                saved.getReminder().toString()
+        );
     }
 
-    public List<Note> getAllNotes() {
-        return (List<Note>) noteRepository.findAll();
+    public List<NoteDTO> getAllNotes() {
+        final List<NoteDTO> dtos = new ArrayList<>();
+        for (final Note note : noteRepository.findAll()) {
+            dtos.add(new NoteDTO(
+                    note.getCategory().getName(),
+                    note.getContent(),
+                    note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
+                    note.getCreatedAt().toString(),
+                    note.getReminder().toString())
+            );
+        }
+        return dtos;
     }
 
     @Transactional
-    public Note updateNote(final long id, final Category category, final String content, final Set<Tag> tags,
+    public NoteDTO updateNote(final long id, final Category category, final String content, final Set<Tag> tags,
                            final Date reminder) {
         final Note note = noteRepository.findById(id).orElseThrow(() -> new RuntimeException("Note not found"));
         if (!note.getCategory().equals(category)) {
@@ -74,7 +90,14 @@ public class NoteService {
         note.setContent(content);
         note.setReminder(reminder);
 
-        return noteRepository.save(note);
+        final Note saved = noteRepository.save(note);
+        return new NoteDTO(
+                saved.getCategory().getName(),
+                saved.getContent(),
+                saved.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
+                saved.getCreatedAt().toString(),
+                saved.getReminder().toString()
+        );
     }
 
     @Transactional

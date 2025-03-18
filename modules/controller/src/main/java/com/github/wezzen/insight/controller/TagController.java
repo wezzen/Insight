@@ -1,5 +1,6 @@
 package com.github.wezzen.insight.controller;
 
+import com.github.wezzen.insight.dto.response.TagDTO;
 import com.github.wezzen.insight.service.TagService;
 import com.github.wezzen.insight.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +21,19 @@ public class TagController {
     }
 
     @PostMapping
-    public ResponseEntity<Tag> createTag(@RequestBody final Tag tag) {
-        final Tag created = tagService.createTag(tag.getTag());
+    public ResponseEntity<TagDTO> createTag(@RequestBody final Tag tag) {
+        final TagDTO created = tagService.createTag(tag.getTag());
         return ResponseEntity.ok(created);
     }
 
     @GetMapping
-    public ResponseEntity<List<Tag>> getTags() {
+    public ResponseEntity<List<TagDTO>> getTags() {
         return ResponseEntity.ok(tagService.getAllTags());
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<Void> deleteTag(@PathVariable final String name) {
-        tagService.deleteTag(name);
+    public ResponseEntity<Void> deleteTag(@PathVariable("name") final String tagName) {
+        tagService.deleteTag(tagName);
         return ResponseEntity.noContent().build();
     }
 }
