@@ -23,6 +23,13 @@ class CategoryServiceTest {
     private final CategoryService categoryService = new CategoryService(categoryRepository);
 
     @Test
+    void convertTest() {
+        final Category category = new Category("TestCategory");
+        final CategoryDTO dto = categoryService.convert(category);
+        assertEquals(category.getName(), dto.name);
+    }
+
+    @Test
     void createCategorySuccessTest() {
         final Category category = new Category("Test Category");
         Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.empty());

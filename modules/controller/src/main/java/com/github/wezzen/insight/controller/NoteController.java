@@ -81,7 +81,7 @@ public class NoteController {
 
     @GetMapping("/s/category/{categoryName}")
     public ResponseEntity<List<NoteDTO>> searchNotesByCategory(@PathVariable("categoryName") final String categoryName) {
-        return ResponseEntity.ok(noteService.findByCategory(categoryName));
+        return ResponseEntity.ok(noteService.findByCategory(new Category(categoryName)));
     }
 
 }

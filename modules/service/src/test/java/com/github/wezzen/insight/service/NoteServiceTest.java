@@ -32,6 +32,19 @@ class NoteServiceTest {
     private final NoteService noteService = new NoteService(noteRepository, categoryRepository, tagRepository);
 
     @Test
+    void convertTest() {
+        final Date now = new Date();
+        final Note note = new Note(0, "Test Content", new Category("TestCategory"), now,
+                Set.of(new Tag("TestTag1"), new Tag("TestTag2")), now);
+        final NoteDTO dto = noteService.convert(note);
+        assertEquals(note.getCategory().getName(), dto.category);
+        assertEquals(note.getContent(), dto.content);
+        assertEquals(note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), dto.tags);
+        assertEquals(note.getCreatedAt().toString(), dto.createdAt);
+        assertEquals(note.getReminder().toString(), dto.remind);
+    }
+
+    @Test
     void createNoteSuccessTest() {
         final Category category = new Category("Test Category");
         final Tag tag = new Tag("Test Tag");
@@ -162,8 +175,8 @@ class NoteServiceTest {
                 new Note(1L, "TestContent2", target, createdAt, Set.of(tag1), remind),
                 new Note(2L, "TestContent3", target, createdAt, Set.of(tag1, tag3), remind)
         );
-        Mockito.when(noteRepository.findAllByCategory(target.getName())).thenReturn(noteDTOS);
-        final List<NoteDTO> fetchedNotes = noteService.findByCategory(target.getName());
+        Mockito.when(noteRepository.getAllByCategory(target)).thenReturn(noteDTOS);
+        final List<NoteDTO> fetchedNotes = noteService.findByCategory(target);
         assertNotNull(fetchedNotes);
         assertEquals(noteDTOS.size(), fetchedNotes.size());
         assertEquals(noteDTOS.get(0).getCategory().getName(), fetchedNotes.get(0).category);
@@ -184,7 +197,7 @@ class NoteServiceTest {
         assertEquals(noteDTOS.get(2).getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.get(2).tags);
         assertEquals(noteDTOS.get(2).getReminder().toString(), fetchedNotes.get(2).remind);
 
-        Mockito.verify(noteRepository, Mockito.times(1)).findAllByCategory(target.getName());
+        Mockito.verify(noteRepository, Mockito.times(1)).getAllByCategory(target);
     }
 
     @Test
@@ -261,11 +274,7 @@ class NoteServiceTest {
                 new Note(2L, "Test Content3", mockCategory, date, tags, date),
                 new Note(3L, "Test Content4", mockCategory, date, tags, date)
         );
-
-        Mockito.when(noteRepository.findByAllTagNames(
-                    tags.stream().map(Tag::getTag).collect(Collectors.toSet()),
-                    tags.size()))
-                .thenReturn(noteDTOS);
+        Mockito.when(noteRepository.findAllByTags(tags, tags.size())).thenReturn(noteDTOS);
         final List<NoteDTO> fetchedNoteDTOS = noteService.findByAllTags(tags);
         assertNotNull(fetchedNoteDTOS);
         assertEquals(noteDTOS.size(), fetchedNoteDTOS.size());
@@ -273,7 +282,7 @@ class NoteServiceTest {
         assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(1).tags);
         assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(2).tags);
         assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(3).tags);
-        Mockito.verify(noteRepository, Mockito.times(1)).findByAllTagNames(Mockito.anySet(), Mockito.anyLong());
+        Mockito.verify(noteRepository, Mockito.times(1)).findAllByTags(Mockito.anySet(), Mockito.anyLong());
     }
 
     @Test
@@ -281,7 +290,7 @@ class NoteServiceTest {
         final List<NoteDTO> fetchedNoteDTOS = noteService.findByAllTags(Set.of());
         assertNotNull(fetchedNoteDTOS);
         assertTrue(fetchedNoteDTOS.isEmpty());
-        Mockito.verify(noteRepository, Mockito.times(0)).findByAllTagNames(Mockito.anySet(), Mockito.anyLong());
+        Mockito.verify(noteRepository, Mockito.times(0)).findAllByTags(Mockito.anySet(), Mockito.anyLong());
     }
 
     @Test
@@ -300,8 +309,7 @@ class NoteServiceTest {
                 new Note(4L, "Test Content5", mockCategory, date, tags, date)
         );
 
-        Mockito.when(noteRepository.findByAnyTagName(tags.stream().map(Tag::getTag).collect(Collectors.toSet())))
-                .thenReturn(noteDTOS);
+        Mockito.when(noteRepository.getAllByTagsIn(tags)).thenReturn(noteDTOS);
         final List<NoteDTO> fetchedNoteDTOS = noteService.findByAnyTag(tags);
         assertNotNull(fetchedNoteDTOS);
         assertEquals(noteDTOS.size(), fetchedNoteDTOS.size());
@@ -310,7 +318,7 @@ class NoteServiceTest {
         assertEquals(Set.of(tag1).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(2).tags);
         assertEquals(Set.of(tag3).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(3).tags);
         assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(4).tags);
-        Mockito.verify(noteRepository, Mockito.times(1)).findByAnyTagName(Mockito.anySet());
+        Mockito.verify(noteRepository, Mockito.times(1)).getAllByTagsIn(Mockito.anySet());
     }
 
     @Test
@@ -318,6 +326,6 @@ class NoteServiceTest {
         final List<NoteDTO> fetchedNoteDTOS = noteService.findByAnyTag(Set.of());
         assertNotNull(fetchedNoteDTOS);
         assertTrue(fetchedNoteDTOS.isEmpty());
-        Mockito.verify(noteRepository, Mockito.times(0)).findByAnyTagName(Mockito.anySet());
+        Mockito.verify(noteRepository, Mockito.times(0)).getAllByTagsIn(Mockito.anySet());
     }
 }

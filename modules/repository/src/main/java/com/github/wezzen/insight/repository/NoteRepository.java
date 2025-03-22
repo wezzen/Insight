@@ -2,15 +2,13 @@ package com.github.wezzen.insight.repository;
 
 import com.github.wezzen.insight.model.Category;
 import com.github.wezzen.insight.model.Note;
+import com.github.wezzen.insight.model.Tag;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Repository
 public interface NoteRepository extends CrudRepository<Note, Long> {
@@ -19,28 +17,26 @@ public interface NoteRepository extends CrudRepository<Note, Long> {
      * get a list of notes that contain ANY of tags from the {@param tagNames}
      * @return list of Notes with tags
      */
-    @Query("SELECT n FROM Note n JOIN n.tags t WHERE t.tag IN :tagNames")
-    List<Note> findByAnyTagName(@Param("tagNames") final Set<String> tagNames);
+    List<Note> getAllByTagsIn(final Collection<Tag> tagNames);
 
     /**
-     * get a list of notes that contain each tag from the {@param tagNames}
+     * get a list of notes that contain each tag from the {@param tags}
      * @return list of Notes with tags
      */
     @Query("""
         SELECT n FROM Note n
         JOIN n.tags t
-        WHERE t.tag IN :tagNames
+        WHERE t.tag IN :tags
         GROUP BY n
         HAVING COUNT(DISTINCT t.tag) = :size
     """)
-    List<Note> findByAllTagNames(@Param("tagNames") final Set<String> tagNames, @Param("size") final long size);
+    List<Note> findAllByTags(@Param("tags") final Set<Tag> tags, @Param("size") final long size);
 
     /**
      * get a list of notes that belongs to the {@param category}
      * @return list of Notes with category
      */
-    @Query("SELECT n FROM Note n JOIN n.category c WHERE c.name = :category")
-    List<Note> findAllByCategory(@Param("category") final String category);
+    List<Note> getAllByCategory(final Category category);
 
     /**
      * get a unique Note with category, content and creating date.

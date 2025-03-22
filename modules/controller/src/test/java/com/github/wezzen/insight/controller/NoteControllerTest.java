@@ -357,7 +357,7 @@ class NoteControllerTest {
                 new NoteDTO("TestCategory1", "TestContent3", Set.of("TestTag7", "TestTag8"), "CreatedAt3", "Remind3"),
                 new NoteDTO("TestCategory1", "TestContent4", Set.of("TestTag1", "TestTag2", "TestTag10"), "CreatedAt4", "Remind4")
         );
-        Mockito.when(noteService.findByCategory(Mockito.anyString())).thenReturn(noteDTOS);
+        Mockito.when(noteService.findByCategory(Mockito.any(Category.class))).thenReturn(noteDTOS);
         mockMvc.perform(get("/notes/s/category/{categoryName}", "TestCategory1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(noteDTOS.size()))
@@ -390,7 +390,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[3].tags").value(hasItem("TestTag10")))
                 .andExpect(jsonPath("$[3].createdAt").value("CreatedAt4"))
                 .andExpect(jsonPath("$[3].remind").value("Remind4"));
-        Mockito.verify(noteService, Mockito.times(1)).findByCategory(Mockito.anyString());
+        Mockito.verify(noteService, Mockito.times(1)).findByCategory(Mockito.any(Category.class));
     }
 
     @Test

@@ -20,6 +20,13 @@ class TagServiceTest {
     private final TagService tagService = new TagService(tagRepository);
 
     @Test
+    void convertTest() {
+        final Tag tag = new Tag("TesTag");
+        final TagDTO dto = tagService.convert(tag);
+        assertEquals(tag.getTag(), dto.tag);
+    }
+
+    @Test
     void createTagSuccessTest() {
         final Tag tag = new Tag("Test Tag");
         Mockito.when(tagRepository.findById(tag.getTag())).thenReturn(Optional.empty());

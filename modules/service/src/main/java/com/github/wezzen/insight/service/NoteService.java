@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class NoteService {
@@ -46,91 +47,37 @@ public class NoteService {
             final Tag synTag = tagRepository.findById(tag.getTag()).orElseGet(() -> tagRepository.save(tag));
             synTags.add(synTag);
         }
-
         final Note note = new Note();
         note.setCategory(synCategory);
         note.setContent(content);
         note.setTags(synTags);
         note.setReminder(reminder);
         note.setCreatedAt(new Date());
-
-        final Note saved = noteRepository.save(note);
-        return new NoteDTO(
-                saved.getCategory().getName(),
-                saved.getContent(),
-                saved.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
-                saved.getCreatedAt().toString(),
-                saved.getReminder().toString()
-        );
+        return convert(noteRepository.save(note));
     }
 
     public List<NoteDTO> getAllNotes() {
-        final List<NoteDTO> dtos = new ArrayList<>();
-        for (final Note note : noteRepository.findAll()) {
-            dtos.add(new NoteDTO(
-                    note.getCategory().getName(),
-                    note.getContent(),
-                    note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
-                    note.getCreatedAt().toString(),
-                    note.getReminder().toString())
-            );
-        }
-        return dtos;
+        return StreamSupport.stream(noteRepository.findAll().spliterator(), false).map(this::convert).toList();
     }
 
-    public List<NoteDTO> findByCategory(final String category) {
-        final List<NoteDTO> dtos = new ArrayList<>();
-        for (final Note note : noteRepository.findAllByCategory(category)) {
-            dtos.add(new NoteDTO(
-                    note.getCategory().getName(),
-                    note.getContent(),
-                    note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
-                    note.getCreatedAt().toString(),
-                    note.getReminder().toString())
-            );
-        }
-        return dtos;
+    public List<NoteDTO> findByCategory(final Category category) {
+        return noteRepository.getAllByCategory(category).stream().map(this::convert).toList();
     }
 
     public List<NoteDTO> findByAllTags(final Set<Tag> tags) {
         if (tags.isEmpty()) {
             return Collections.emptyList();
         }
-        final List<Note> notes = noteRepository.findByAllTagNames(
-                tags.stream().map(Tag::getTag).collect(Collectors.toSet()),
-                tags.size()
-        );
-        final List<NoteDTO> dtos = new ArrayList<>();
-        for (final Note note : notes) {
-            dtos.add(new NoteDTO(
-                    note.getCategory().getName(),
-                    note.getContent(),
-                    note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
-                    note.getCreatedAt().toString(),
-                    note.getReminder().toString()
-            ));
-        }
-        return dtos;
+        return noteRepository.findAllByTags(tags, tags.size()).stream().map(this::convert).toList();
     }
 
     public List<NoteDTO> findByAnyTag(final Set<Tag> tags) {
         if (tags.isEmpty()) {
             return Collections.emptyList();
         }
-        final List<Note> notes = noteRepository.findByAnyTagName(
-                tags.stream().map(Tag::getTag).collect(Collectors.toSet())
-        );
-        final List<NoteDTO> dtos = new ArrayList<>();
-        for (final Note note : notes) {
-            dtos.add(new NoteDTO(
-                    note.getCategory().getName(),
-                    note.getContent(),
-                    note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
-                    note.getCreatedAt().toString(),
-                    note.getReminder().toString()
-            ));
-        }
-        return dtos;
+        return noteRepository.getAllByTagsIn(tags).stream()
+                .map(this::convert)
+                .toList();
     }
 
     @Transactional
@@ -150,14 +97,7 @@ public class NoteService {
         note.setContent(newContent);
         note.setReminder(reminder);
 
-        final Note updated = noteRepository.save(note);
-        return new NoteDTO(
-                updated.getCategory().getName(),
-                updated.getContent(),
-                updated.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
-                updated.getCreatedAt().toString(),
-                updated.getReminder().toString()
-        );
+        return convert(noteRepository.save(note));
     }
 
     @Transactional
@@ -169,5 +109,15 @@ public class NoteService {
                     category.getName(), content, createdAt));
         }
         noteRepository.deleteById(note.get().getId());
+    }
+
+    protected NoteDTO convert(final Note note) {
+        return new NoteDTO(
+                note.getCategory().getName(),
+                note.getContent(),
+                note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
+                note.getCreatedAt().toString(),
+                note.getReminder().toString()
+        );
     }
 }

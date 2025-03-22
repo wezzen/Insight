@@ -1,17 +1,20 @@
 package com.github.wezzen.insight.service;
 
 import com.github.wezzen.insight.dto.response.CategoryDTO;
+import com.github.wezzen.insight.model.Category;
 import com.github.wezzen.insight.model.Note;
+import com.github.wezzen.insight.repository.CategoryRepository;
 import com.github.wezzen.insight.service.exception.CategoryNotFoundException;
 import com.github.wezzen.insight.service.exception.DeleteNotEmptyCategoryException;
 import com.github.wezzen.insight.service.exception.DuplicateCategoryException;
-import com.github.wezzen.insight.model.Category;
-import com.github.wezzen.insight.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.StreamSupport;
 
 @Service
 public class CategoryService {
@@ -28,16 +31,11 @@ public class CategoryService {
         if (categoryRepository.findById(name).isPresent()) {
             throw new DuplicateCategoryException("Category with name " + name + " already exists");
         }
-        final Category saved = categoryRepository.save(new Category(name));
-        return new CategoryDTO(saved.getName());
+        return convert(categoryRepository.save(new Category(name)));
     }
 
     public List<CategoryDTO> getAllCategories() {
-        final List<CategoryDTO> dtos = new ArrayList<>();
-        for (final Category category : categoryRepository.findAll()) {
-            dtos.add(new CategoryDTO(category.getName()));
-        }
-        return dtos;
+        return StreamSupport.stream(categoryRepository.findAll().spliterator(), false).map(this::convert).toList();
     }
 
     @Transactional
@@ -51,5 +49,9 @@ public class CategoryService {
             throw new DeleteNotEmptyCategoryException("Category with name " + name + " has " + notes.size() + " notes ");
         }
         categoryRepository.deleteById(name);
+    }
+
+    protected CategoryDTO convert(final Category category) {
+        return new CategoryDTO(category.getName());
     }
 }

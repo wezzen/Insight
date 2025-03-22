@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class TagService {
@@ -27,16 +29,11 @@ public class TagService {
         if (tagRepository.findById(tag).isPresent()) {
             throw new DuplicateTagException("Tag " + tag + " already exists");
         }
-        final Tag saved = tagRepository.save(new Tag(tag));
-        return new TagDTO(saved.getTag());
+        return convert(tagRepository.save(new Tag(tag)));
     }
 
     public List<TagDTO> getAllTags() {
-        final List<TagDTO> dtos = new ArrayList<>();
-        for (final Tag tag : tagRepository.findAll()) {
-            dtos.add(new TagDTO(tag.getTag()));
-        }
-        return dtos;
+        return StreamSupport.stream(tagRepository.findAll().spliterator(), false).map(this::convert).toList();
     }
 
     @Transactional
@@ -45,5 +42,9 @@ public class TagService {
             throw new TagNotFoundException("Tag " + tag + " not found");
         }
         tagRepository.deleteById(tag);
+    }
+
+    protected TagDTO convert(final Tag tag) {
+        return new TagDTO(tag.getTag());
     }
 }
