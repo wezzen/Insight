@@ -2,10 +2,8 @@ package com.github.wezzen.insight.service;
 
 import com.github.wezzen.insight.repository.CategoryRepository;
 import org.mockito.Mockito;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 
 @Configuration

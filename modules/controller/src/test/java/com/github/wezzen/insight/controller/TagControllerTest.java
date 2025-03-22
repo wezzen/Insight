@@ -1,6 +1,5 @@
 package com.github.wezzen.insight.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wezzen.insight.dto.response.TagDTO;
 import com.github.wezzen.insight.service.TagService;
 import org.junit.jupiter.api.AfterEach;
@@ -31,8 +30,6 @@ class TagControllerTest {
 
     @Autowired
     private TagService tagService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     private AutoCloseable closeable;
 

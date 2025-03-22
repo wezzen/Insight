@@ -7,7 +7,6 @@ import com.github.wezzen.insight.dto.response.NoteDTO;
 import com.github.wezzen.insight.model.Category;
 import com.github.wezzen.insight.model.Tag;
 import com.github.wezzen.insight.service.NoteService;
-import com.github.wezzen.insight.service.TagService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
