@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Immutable;
 
 @Immutable
 @EqualsAndHashCode
-public class DeleteNoteRequest {
+public final class DeleteNoteRequest {
 
     public final String category;
     public final String content;

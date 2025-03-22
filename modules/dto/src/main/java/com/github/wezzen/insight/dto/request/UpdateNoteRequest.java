@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Immutable
 @EqualsAndHashCode
-public class UpdateNoteRequest {
+public final class UpdateNoteRequest {
 
     public final String category;
     public final String content;
