@@ -23,8 +23,15 @@ class TagTest {
         final Tag tag3 = new Tag("Tag2");
 
         assertEquals(tag1, tag1);
+        assertEquals(tag1.hashCode(), tag1.hashCode());
         assertEquals(tag1, tag2);
+        assertEquals(tag1.hashCode(), tag2.hashCode());
+        assertEquals(tag2, tag1);
+        assertEquals(tag2.hashCode(), tag1.hashCode());
         assertNotEquals(tag1, tag3);
+        assertNotEquals(tag1.hashCode(), tag3.hashCode());
+        assertNotEquals(tag3, tag1);
+        assertNotEquals(tag3.hashCode(), tag1.hashCode());
     }
 
     @Test

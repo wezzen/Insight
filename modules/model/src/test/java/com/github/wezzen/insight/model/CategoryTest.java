@@ -23,8 +23,15 @@ class CategoryTest {
         final Category category3 = new Category("Home");
 
         assertEquals(category1, category1);
+        assertEquals(category1.hashCode(), category1.hashCode());
         assertEquals(category1, category2);
+        assertEquals(category1.hashCode(), category2.hashCode());
+        assertEquals(category2, category1);
+        assertEquals(category2.hashCode(), category1.hashCode());
         assertNotEquals(category1, category3);
+        assertNotEquals(category1.hashCode(), category3.hashCode());
+        assertNotEquals(category3, category1);
+        assertNotEquals(category3.hashCode(), category1.hashCode());
     }
 
     @Test

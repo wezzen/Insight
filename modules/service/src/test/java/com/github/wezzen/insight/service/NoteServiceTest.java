@@ -150,6 +150,44 @@ class NoteServiceTest {
     }
 
     @Test
+    void findByCategorySuccessTest() {
+        final Tag tag1 = new Tag("TestTag1");
+        final Tag tag2 = new Tag("TestTag2");
+        final Tag tag3 = new Tag("TestTag3");
+        final Category target = new Category("TestCategory1");
+        final Date createdAt = new Date();
+        final Date remind = new Date();
+        final List<Note> noteDTOS = List.of(
+                new Note(0L, "TestContent1", target, createdAt, Set.of(tag1, tag2), remind),
+                new Note(1L, "TestContent2", target, createdAt, Set.of(tag1), remind),
+                new Note(2L, "TestContent3", target, createdAt, Set.of(tag1, tag3), remind)
+        );
+        Mockito.when(noteRepository.findAllByCategory(target.getName())).thenReturn(noteDTOS);
+        final List<NoteDTO> fetchedNotes = noteService.findByCategory(target.getName());
+        assertNotNull(fetchedNotes);
+        assertEquals(noteDTOS.size(), fetchedNotes.size());
+        assertEquals(noteDTOS.get(0).getCategory().getName(), fetchedNotes.get(0).category);
+        assertEquals(noteDTOS.get(0).getContent(), fetchedNotes.get(0).content);
+        assertEquals(noteDTOS.get(0).getCreatedAt().toString(), fetchedNotes.get(0).createdAt);
+        assertEquals(noteDTOS.get(0).getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.get(0).tags);
+        assertEquals(noteDTOS.get(0).getReminder().toString(), fetchedNotes.get(0).remind);
+
+        assertEquals(noteDTOS.get(1).getCategory().getName(), fetchedNotes.get(1).category);
+        assertEquals(noteDTOS.get(1).getContent(), fetchedNotes.get(1).content);
+        assertEquals(noteDTOS.get(1).getCreatedAt().toString(), fetchedNotes.get(1).createdAt);
+        assertEquals(noteDTOS.get(1).getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.get(1).tags);
+        assertEquals(noteDTOS.get(1).getReminder().toString(), fetchedNotes.get(1).remind);
+
+        assertEquals(noteDTOS.get(2).getCategory().getName(), fetchedNotes.get(2).category);
+        assertEquals(noteDTOS.get(2).getContent(), fetchedNotes.get(2).content);
+        assertEquals(noteDTOS.get(2).getCreatedAt().toString(), fetchedNotes.get(2).createdAt);
+        assertEquals(noteDTOS.get(2).getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.get(2).tags);
+        assertEquals(noteDTOS.get(2).getReminder().toString(), fetchedNotes.get(2).remind);
+
+        Mockito.verify(noteRepository, Mockito.times(1)).findAllByCategory(target.getName());
+    }
+
+    @Test
     void updateNoteSuccessTest() {
         final String oldContent = "Test Old Content";
         final String newContent = "Test New Content";

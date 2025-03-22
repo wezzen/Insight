@@ -2,6 +2,7 @@ package com.github.wezzen.insight.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wezzen.insight.dto.request.CreateNoteRequest;
+import com.github.wezzen.insight.dto.request.DeleteNoteRequest;
 import com.github.wezzen.insight.dto.request.UpdateNoteRequest;
 import com.github.wezzen.insight.dto.response.NoteDTO;
 import com.github.wezzen.insight.model.Category;
@@ -130,6 +131,7 @@ class NoteControllerTest {
 
     @Test
     void createNoteSuccessTest() throws Exception {
+        final Date createdAt = new Date();
         final NoteDTO noteDTO = new NoteDTO(
                 "TestCategory1",
                 "TestContent1",
@@ -137,7 +139,7 @@ class NoteControllerTest {
                         "TestTag1",
                         "TestTag2"
                 ),
-                "CreatedAt1",
+                createdAt.toString(),
                 Long.toString(new Date().getTime())
         );
         final CreateNoteRequest request = new CreateNoteRequest(
@@ -157,7 +159,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$.tags").value(hasSize(2)))
                 .andExpect(jsonPath("$.tags").value(hasItem("TestTag1")))
                 .andExpect(jsonPath("$.tags").value(hasItem("TestTag2")))
-                .andExpect(jsonPath("$.createdAt").value("CreatedAt1"))
+                .andExpect(jsonPath("$.createdAt").value(createdAt.toString()))
                 .andExpect(jsonPath("$.remind").value(noteDTO.remind));
         Mockito.verify(noteService, Mockito.times(1))
                 .createNote(Mockito.any(Category.class), Mockito.anyString(), Mockito.anySet(), Mockito.any());
@@ -342,5 +344,89 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[4].createdAt").value("CreatedAt5"))
                 .andExpect(jsonPath("$[4].remind").value("Remind5"));
         Mockito.verify(noteService, Mockito.times(1)).findByAnyTag(Mockito.anySet());
+    }
+
+    @Test
+    void findNotesByCategorySuccessTest() throws Exception {
+        final List<NoteDTO> noteDTOS = List.of(
+                new NoteDTO("TestCategory1", "TestContent1", Set.of("TestTag1", "TestTag2"), "CreatedAt1", "Remind1"),
+                new NoteDTO("TestCategory1", "TestContent2", Set.of("TestTag1", "TestTag3"), "CreatedAt2", "Remind2"),
+                new NoteDTO("TestCategory1", "TestContent3", Set.of("TestTag7", "TestTag8"), "CreatedAt3", "Remind3"),
+                new NoteDTO("TestCategory1", "TestContent4", Set.of("TestTag1", "TestTag2", "TestTag10"), "CreatedAt4", "Remind4")
+        );
+        Mockito.when(noteService.findByCategory(Mockito.anyString())).thenReturn(noteDTOS);
+        mockMvc.perform(get("/notes/s/category/{categoryName}", "TestCategory1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(noteDTOS.size()))
+                .andExpect(jsonPath("$[0].category").value("TestCategory1"))
+                .andExpect(jsonPath("$[0].content").value("TestContent1"))
+                .andExpect(jsonPath("$[0].tags").value(hasSize(2)))
+                .andExpect(jsonPath("$[0].tags").value(hasItem("TestTag1")))
+                .andExpect(jsonPath("$[0].tags").value(hasItem("TestTag2")))
+                .andExpect(jsonPath("$[0].createdAt").value("CreatedAt1"))
+                .andExpect(jsonPath("$[0].remind").value("Remind1"))
+                .andExpect(jsonPath("$[1].category").value("TestCategory1"))
+                .andExpect(jsonPath("$[1].content").value("TestContent2"))
+                .andExpect(jsonPath("$[1].tags").value(hasSize(2)))
+                .andExpect(jsonPath("$[1].tags").value(hasItem("TestTag1")))
+                .andExpect(jsonPath("$[1].tags").value(hasItem("TestTag3")))
+                .andExpect(jsonPath("$[1].createdAt").value("CreatedAt2"))
+                .andExpect(jsonPath("$[1].remind").value("Remind2"))
+                .andExpect(jsonPath("$[2].category").value("TestCategory1"))
+                .andExpect(jsonPath("$[2].content").value("TestContent3"))
+                .andExpect(jsonPath("$[2].tags").value(hasSize(2)))
+                .andExpect(jsonPath("$[2].tags").value(hasItem("TestTag7")))
+                .andExpect(jsonPath("$[2].tags").value(hasItem("TestTag8")))
+                .andExpect(jsonPath("$[2].createdAt").value("CreatedAt3"))
+                .andExpect(jsonPath("$[2].remind").value("Remind3"))
+                .andExpect(jsonPath("$[3].category").value("TestCategory1"))
+                .andExpect(jsonPath("$[3].content").value("TestContent4"))
+                .andExpect(jsonPath("$[3].tags").value(hasSize(3)))
+                .andExpect(jsonPath("$[3].tags").value(hasItem("TestTag1")))
+                .andExpect(jsonPath("$[3].tags").value(hasItem("TestTag2")))
+                .andExpect(jsonPath("$[3].tags").value(hasItem("TestTag10")))
+                .andExpect(jsonPath("$[3].createdAt").value("CreatedAt4"))
+                .andExpect(jsonPath("$[3].remind").value("Remind4"));
+        Mockito.verify(noteService, Mockito.times(1)).findByCategory(Mockito.anyString());
+    }
+
+    @Test
+    void deleteNotesSuccessTest() throws Exception {
+        final Date createdAt = new Date();
+        final NoteDTO noteDTO = new NoteDTO(
+                "TestCategory1",
+                "TestContent1",
+                Set.of(
+                        "TestTag1",
+                        "TestTag2"
+                ),
+                createdAt.toString(),
+                Long.toString(new Date().getTime())
+        );
+        final CreateNoteRequest request = new CreateNoteRequest(
+                new Category(noteDTO.category),
+                noteDTO.content,
+                noteDTO.tags.stream().map(Tag::new).collect(Collectors.toSet()),
+                new Date(Long.parseLong(noteDTO.remind))
+        );
+        Mockito.when(noteService.createNote(Mockito.any(Category.class), Mockito.anyString(), Mockito.anySet(), Mockito.any()))
+                .thenReturn(noteDTO);
+
+        mockMvc.perform(post("/notes").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.category").value("TestCategory1"))
+                .andExpect(jsonPath("$.content").value("TestContent1"))
+                .andExpect(jsonPath("$.tags").value(hasSize(2)))
+                .andExpect(jsonPath("$.tags").value(hasItem("TestTag1")))
+                .andExpect(jsonPath("$.tags").value(hasItem("TestTag2")))
+                .andExpect(jsonPath("$.createdAt").value(createdAt.toString()))
+                .andExpect(jsonPath("$.remind").value(noteDTO.remind));
+        Mockito.verify(noteService, Mockito.times(1))
+                .createNote(Mockito.any(Category.class), Mockito.anyString(), Mockito.anySet(), Mockito.any());
+        final DeleteNoteRequest deleteRequest = new DeleteNoteRequest("TestCategory1", "TestContent1", createdAt.getTime());
+        mockMvc.perform(delete("/notes/delete").contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(deleteRequest)))
+                .andExpect(status().isNoContent());
+        Mockito.verify(noteService, Mockito.times(1)).deleteNote(Mockito.any(Category.class), Mockito.anyString(), Mockito.any());
     }
 }

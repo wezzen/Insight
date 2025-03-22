@@ -1,6 +1,5 @@
 package com.github.wezzen.insight.dto.request;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.wezzen.insight.model.Category;

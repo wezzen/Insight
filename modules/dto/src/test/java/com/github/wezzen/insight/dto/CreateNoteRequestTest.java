@@ -34,9 +34,15 @@ class CreateNoteRequestTest {
                 Set.of(),
                 Mockito.mock(Date.class)
         );
+        assertNotEquals(null, request1);
         assertEquals(request1, request1);
+        assertEquals(request1.hashCode(), request1.hashCode());
         assertEquals(request1, request2);
+        assertEquals(request1.hashCode(), request2.hashCode());
         assertNotEquals(request1, request3);
+        assertNotEquals(request1.hashCode(), request3.hashCode());
+
+        assertNotEquals(request1, category);
     }
 
 }

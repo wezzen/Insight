@@ -15,8 +15,12 @@ class TagDTOTest {
         assertEquals(dto1.hashCode(), dto1.hashCode());
         assertEquals(dto1, dto2);
         assertEquals(dto1.hashCode(), dto2.hashCode());
+        assertEquals(dto2, dto1);
+        assertEquals(dto2.hashCode(), dto1.hashCode());
         assertNotEquals(dto1, dto3);
         assertNotEquals(dto1.hashCode(), dto3.hashCode());
+        assertNotEquals(dto3, dto1);
+        assertNotEquals(dto3.hashCode(), dto1.hashCode());
     }
 
 }
