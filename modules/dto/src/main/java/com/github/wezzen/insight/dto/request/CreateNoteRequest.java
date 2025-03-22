@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.wezzen.insight.model.Category;
 import com.github.wezzen.insight.model.Tag;
 import lombok.EqualsAndHashCode;
+import org.springframework.data.annotation.Immutable;
 
 import java.util.Date;
 import java.util.Set;
 
+@Immutable
 @EqualsAndHashCode
 public class CreateNoteRequest {
     public final Category category;
