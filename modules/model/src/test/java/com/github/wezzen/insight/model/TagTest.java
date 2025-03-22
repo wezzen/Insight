@@ -1,7 +1,11 @@
 package com.github.wezzen.insight.model;
 
+import jakarta.annotation.Nonnull;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
 
+import java.util.Date;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,21 +21,14 @@ class TagTest {
     }
 
     @Test
-    void equalsTest() {
-        final Tag tag1 = new Tag("Tag1");
-        final Tag tag2 = new Tag("Tag1");
-        final Tag tag3 = new Tag("Tag2");
-
-        assertEquals(tag1, tag1);
-        assertEquals(tag1.hashCode(), tag1.hashCode());
-        assertEquals(tag1, tag2);
-        assertEquals(tag1.hashCode(), tag2.hashCode());
-        assertEquals(tag2, tag1);
-        assertEquals(tag2.hashCode(), tag1.hashCode());
-        assertNotEquals(tag1, tag3);
-        assertNotEquals(tag1.hashCode(), tag3.hashCode());
-        assertNotEquals(tag3, tag1);
-        assertNotEquals(tag3.hashCode(), tag1.hashCode());
+    void equalsAndHashCodeTest() {
+        final Note note1 = new Note(0L, "TestContet", null, new Date(), Set.of(new Tag("TestTag1")), new Date());
+        final Note note2 = new Note(1L, "TestContet", null, new Date(), Set.of(new Tag("TestTag1")), new Date());
+        EqualsVerifier.forClass(Tag.class)
+                .withIgnoredAnnotations(Nonnull.class)
+                .withPrefabValues(Note.class, note1, note2)
+                .suppress(Warning.SURROGATE_KEY)
+                .verify();
     }
 
     @Test

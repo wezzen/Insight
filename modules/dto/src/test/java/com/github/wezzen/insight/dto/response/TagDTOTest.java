@@ -1,26 +1,22 @@
 package com.github.wezzen.insight.dto.response;
 
+import jakarta.annotation.Nonnull;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TagDTOTest {
 
     @Test
     void creatingTest() {
-        final TagDTO dto1 = new TagDTO("Tag 1");
-        final TagDTO dto2 = new TagDTO("Tag 1");
-        final TagDTO dto3 = new TagDTO("Tag 3");
-        assertEquals(dto1, dto1);
-        assertEquals(dto1.hashCode(), dto1.hashCode());
-        assertEquals(dto1, dto2);
-        assertEquals(dto1.hashCode(), dto2.hashCode());
-        assertEquals(dto2, dto1);
-        assertEquals(dto2.hashCode(), dto1.hashCode());
-        assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1.hashCode(), dto3.hashCode());
-        assertNotEquals(dto3, dto1);
-        assertNotEquals(dto3.hashCode(), dto1.hashCode());
+        final TagDTO dto = new TagDTO("TestTag");
+        Assertions.assertEquals("TestTag", dto.tag);
     }
 
+    @Test
+    void equalsAndHashCodeTest() {
+        EqualsVerifier.forClass(TagDTO.class)
+                .withIgnoredAnnotations(Nonnull.class)
+                .verify();
+    }
 }

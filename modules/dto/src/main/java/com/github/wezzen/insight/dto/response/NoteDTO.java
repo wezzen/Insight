@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Immutable
 @EqualsAndHashCode
-public class NoteDTO {
+public final class NoteDTO {
 
     public final String category;
 

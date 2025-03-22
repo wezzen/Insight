@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Immutable;
 
 @Immutable
 @EqualsAndHashCode
-public class CategoryDTO {
+public final class CategoryDTO {
 
     public final String name;
 

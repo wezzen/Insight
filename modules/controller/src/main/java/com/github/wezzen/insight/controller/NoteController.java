@@ -30,10 +30,10 @@ public class NoteController {
     @PostMapping
     public ResponseEntity<NoteDTO> addNewNote(@RequestBody final CreateNoteRequest request) {
         final NoteDTO dto = noteService.createNote(
-                request.category,
+                new Category(request.category),
                 request.content,
-                request.tags,
-                request.reminder
+                request.tags.stream().map(Tag::new).collect(Collectors.toSet()),
+                new Date(request.reminder)
         );
         return ResponseEntity.ok(dto);
     }

@@ -6,7 +6,6 @@ import com.github.wezzen.insight.dto.request.DeleteNoteRequest;
 import com.github.wezzen.insight.dto.request.UpdateNoteRequest;
 import com.github.wezzen.insight.dto.response.NoteDTO;
 import com.github.wezzen.insight.model.Category;
-import com.github.wezzen.insight.model.Tag;
 import com.github.wezzen.insight.service.NoteService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,11 +19,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -132,6 +133,7 @@ class NoteControllerTest {
     @Test
     void createNoteSuccessTest() throws Exception {
         final Date createdAt = new Date();
+        final Date remind = new Date();
         final NoteDTO noteDTO = new NoteDTO(
                 "TestCategory1",
                 "TestContent1",
@@ -140,13 +142,13 @@ class NoteControllerTest {
                         "TestTag2"
                 ),
                 createdAt.toString(),
-                Long.toString(new Date().getTime())
+                remind.toString()
         );
         final CreateNoteRequest request = new CreateNoteRequest(
-                new Category(noteDTO.category),
+                noteDTO.category,
                 noteDTO.content,
-                noteDTO.tags.stream().map(Tag::new).collect(Collectors.toSet()),
-                new Date(Long.parseLong(noteDTO.remind))
+                noteDTO.tags,
+                remind.getTime()
         );
         Mockito.when(noteService.createNote(Mockito.any(Category.class), Mockito.anyString(), Mockito.anySet(), Mockito.any()))
                 .thenReturn(noteDTO);
@@ -167,8 +169,9 @@ class NoteControllerTest {
 
     @Test
     void updateNoteSuccessTest() throws Exception {
-        final SimpleDateFormat formatter = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
         final String newContent = "NewTestContent1";
+        final Date createdAt = new Date();
+        final Date remind = new Date();
         final NoteDTO noteDTO = new NoteDTO(
                 "TestCategory1",
                 "TestContent1",
@@ -176,14 +179,14 @@ class NoteControllerTest {
                         "TestTag1",
                         "TestTag2"
                 ),
-                new Date().toString(),
-                new Date().toString()
+                createdAt.toString(),
+                remind.toString()
         );
         final CreateNoteRequest request = new CreateNoteRequest(
-                new Category(noteDTO.category),
+                noteDTO.category,
                 noteDTO.content,
-                noteDTO.tags.stream().map(Tag::new).collect(Collectors.toSet()),
-                formatter.parse(noteDTO.remind)
+                noteDTO.tags,
+                remind.getTime()
         );
         Mockito.when(noteService.createNote(Mockito.any(Category.class), Mockito.anyString(), Mockito.anySet(), Mockito.any()))
                 .thenReturn(noteDTO);
@@ -205,13 +208,13 @@ class NoteControllerTest {
                 noteDTO.category,
                 noteDTO.content,
                 newContent,
-                formatter.parse(noteDTO.createdAt).getTime(),
+                createdAt.getTime(),
                 Set.of(
                         "TestTag1",
                         "TestTag2",
                         "TestTag3"
                 ),
-                formatter.parse(noteDTO.remind).getTime()
+                remind.getTime()
         );
 
         final NoteDTO updatedNoteDTO = new NoteDTO(
@@ -393,6 +396,7 @@ class NoteControllerTest {
     @Test
     void deleteNotesSuccessTest() throws Exception {
         final Date createdAt = new Date();
+        final Date remind = new Date();
         final NoteDTO noteDTO = new NoteDTO(
                 "TestCategory1",
                 "TestContent1",
@@ -401,13 +405,13 @@ class NoteControllerTest {
                         "TestTag2"
                 ),
                 createdAt.toString(),
-                Long.toString(new Date().getTime())
+                remind.toString()
         );
         final CreateNoteRequest request = new CreateNoteRequest(
-                new Category(noteDTO.category),
+                noteDTO.category,
                 noteDTO.content,
-                noteDTO.tags.stream().map(Tag::new).collect(Collectors.toSet()),
-                new Date(Long.parseLong(noteDTO.remind))
+                noteDTO.tags,
+                remind.getTime()
         );
         Mockito.when(noteService.createNote(Mockito.any(Category.class), Mockito.anyString(), Mockito.anySet(), Mockito.any()))
                 .thenReturn(noteDTO);

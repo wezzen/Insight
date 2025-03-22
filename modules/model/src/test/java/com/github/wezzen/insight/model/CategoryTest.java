@@ -1,7 +1,12 @@
 package com.github.wezzen.insight.model;
 
+import jakarta.annotation.Nonnull;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import java.util.Date;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -11,27 +16,24 @@ class CategoryTest {
     @Test
     void creatingTest() {
         final Category category = new Category("Category");
+        category.setNotes(null);
         assertNotNull(category);
         assertEquals("Category", category.getName());
-        assertEquals(new Category("Category"), category);
+        assertNull(category.getNotes());
+        final Category category1 = new Category("TestCategory", Mockito.anySet());
+        assertNotNull(category1);
+        assertEquals("TestCategory", category1.getName());
     }
 
     @Test
-    void equalsTest() {
-        final Category category1 = new Category("Work");
-        final Category category2 = new Category("Work");
-        final Category category3 = new Category("Home");
-
-        assertEquals(category1, category1);
-        assertEquals(category1.hashCode(), category1.hashCode());
-        assertEquals(category1, category2);
-        assertEquals(category1.hashCode(), category2.hashCode());
-        assertEquals(category2, category1);
-        assertEquals(category2.hashCode(), category1.hashCode());
-        assertNotEquals(category1, category3);
-        assertNotEquals(category1.hashCode(), category3.hashCode());
-        assertNotEquals(category3, category1);
-        assertNotEquals(category3.hashCode(), category1.hashCode());
+    void equalsAndHashCodeTest() {
+        final Note note1 = new Note(0L, "TestContet", null, new Date(), Set.of(new Tag("TestTag1")), new Date());
+        final Note note2 = new Note(1L, "TestContet", null, new Date(), Set.of(new Tag("TestTag1")), new Date());
+        EqualsVerifier.forClass(Category.class)
+                .withIgnoredAnnotations(Nonnull.class)
+                .withPrefabValues(Note.class, note1, note2)
+                .suppress(Warning.SURROGATE_KEY)
+                .verify();
     }
 
     @Test

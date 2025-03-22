@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Immutable;
 
 @Immutable
 @EqualsAndHashCode
-public class TagDTO {
+public final class TagDTO {
 
     public final String tag;
 

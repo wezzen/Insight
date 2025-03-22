@@ -1,46 +1,40 @@
 package com.github.wezzen.insight.dto.response;
 
+import jakarta.annotation.Nonnull;
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Date;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class NoteDTOTest {
 
     @Test
     void creatingTest() {
-        final NoteDTO dto1 = new NoteDTO(
-                "Category 1",
-                "Content 1",
-                Set.of("Tag1", "Tag2"),
-                "CreateAt 1",
-                "Remind 1"
+        final Date createdAt = new Date();
+        final Date remind = new Date();
+        final NoteDTO dto = new NoteDTO(
+                "TestCategory",
+                "TestContent",
+                Set.of(
+                        "TestTag1",
+                        "TestTag2"
+                ),
+                createdAt.toString(),
+                remind.toString()
         );
-        final NoteDTO dto2 = new NoteDTO(
-                "Category 1",
-                "Content 1",
-                Set.of("Tag1", "Tag2"),
-                "CreateAt 1",
-                "Remind 1"
-        );
-        final NoteDTO dto3 = new NoteDTO(
-                "Category 2",
-                "Content 2",
-                Set.of("Tag1", "Tag2"),
-                "CreateAt 2",
-                "Remind 2"
-        );
-        assertEquals(dto1, dto1);
-        assertEquals(dto1.hashCode(), dto1.hashCode());
-        assertEquals(dto1, dto2);
-        assertEquals(dto1.hashCode(), dto2.hashCode());
-        assertEquals(dto2, dto1);
-        assertEquals(dto2.hashCode(), dto1.hashCode());
-        assertNotEquals(dto1, dto3);
-        assertNotEquals(dto1.hashCode(), dto3.hashCode());
-        assertNotEquals(dto3, dto1);
-        assertNotEquals(dto3.hashCode(), dto1.hashCode());
+        Assertions.assertEquals("TestCategory", dto.category);
+        Assertions.assertEquals("TestContent", dto.content);
+        Assertions.assertEquals(Set.of("TestTag1", "TestTag2"), dto.tags);
+        Assertions.assertEquals(createdAt.toString(), dto.createdAt);
+        Assertions.assertEquals(remind.toString(), dto.remind);
     }
 
+    @Test
+    void equalsAndHashCodeTest() {
+        EqualsVerifier.forClass(NoteDTO.class)
+                .withIgnoredAnnotations(Nonnull.class)
+                .verify();
+    }
 }
