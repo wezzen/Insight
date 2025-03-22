@@ -7,7 +7,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -31,7 +33,7 @@ public interface NoteRepository extends CrudRepository<Note, Long> {
         GROUP BY n
         HAVING COUNT(DISTINCT t.tag) = :size
     """)
-    List<Note> findByTagNames(@Param("tagNames") final Set<String> tagNames, @Param("size") final long size);
+    List<Note> findByAllTagNames(@Param("tagNames") final Set<String> tagNames, @Param("size") final long size);
 
     /**
      * get a list of notes that belongs to the {@param category}
@@ -39,4 +41,10 @@ public interface NoteRepository extends CrudRepository<Note, Long> {
      */
     @Query("SELECT n FROM Note n JOIN n.category c WHERE c.name = :category")
     List<Note> findAllByCategory(@Param("category") final String category);
+
+    /**
+     * get a unique Note with category, content and creating date.
+     * @return the note.
+     */
+    Optional<Note> findByCategoryAndContentAndCreatedAt(final Category category, final String content, final Date createdAt);
 }
