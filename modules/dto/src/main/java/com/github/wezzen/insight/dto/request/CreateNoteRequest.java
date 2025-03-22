@@ -2,27 +2,24 @@ package com.github.wezzen.insight.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.github.wezzen.insight.model.Category;
-import com.github.wezzen.insight.model.Tag;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Immutable;
 
-import java.util.Date;
 import java.util.Set;
 
 @Immutable
 @EqualsAndHashCode
-public class CreateNoteRequest {
-    public final Category category;
+public final class CreateNoteRequest {
+    public final String category;
     public final String content;
-    public final Set<Tag> tags;
-    public final Date reminder;
+    public final Set<String> tags;
+    public final long reminder;
 
     @JsonCreator
-    public CreateNoteRequest(@JsonProperty("category") final Category category,
+    public CreateNoteRequest(@JsonProperty("category") final String category,
                              @JsonProperty("content") final String content,
-                             @JsonProperty("tags") final Set<Tag> tags,
-                             @JsonProperty("reminder") final Date reminder) {
+                             @JsonProperty("tags") final Set<String> tags,
+                             @JsonProperty("reminder") final long reminder) {
         this.category = category;
         this.content = content;
         this.tags = tags;
