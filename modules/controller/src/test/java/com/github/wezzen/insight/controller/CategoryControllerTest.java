@@ -61,7 +61,7 @@ class CategoryControllerTest {
         final CategoryDTO category = new CategoryDTO("Test Category");
         Mockito.when(categoryService.createCategory(Mockito.any())).thenReturn(category);
 
-        mockMvc.perform(post("/categories").contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(category)))
+        mockMvc.perform(post("/categories").contentType(MediaType.APPLICATION_JSON_VALUE).content(category.name))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(category.name));
 
@@ -93,7 +93,7 @@ class CategoryControllerTest {
         final CategoryDTO category = new CategoryDTO("Test Category");
         Mockito.when(categoryService.createCategory(Mockito.any())).thenReturn(category);
 
-        mockMvc.perform(post("/categories").contentType(MediaType.APPLICATION_JSON_VALUE).content(objectMapper.writeValueAsString(category)))
+        mockMvc.perform(post("/categories").contentType(MediaType.APPLICATION_JSON_VALUE).content(category.name))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(category.name));
 
