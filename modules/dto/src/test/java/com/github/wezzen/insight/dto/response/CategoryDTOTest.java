@@ -3,7 +3,6 @@ package com.github.wezzen.insight.dto.response;
 import jakarta.annotation.Nonnull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class CategoryDTOTest {
@@ -15,7 +14,6 @@ class CategoryDTOTest {
     }
 
     @Test
-    @Disabled
     void equalsAndHashCodeTest() {
         EqualsVerifier.forClass(CategoryDTO.class)
                 .withIgnoredAnnotations(Nonnull.class)
