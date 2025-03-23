@@ -11,7 +11,7 @@ class CategoryDTOTest {
     @Test
     void creatingTest() {
         final CategoryDTO dto = new CategoryDTO("TestName");
-        Assertions.assertNotEquals("TestName", dto.name);
+        Assertions.assertEquals("TestName", dto.name);
     }
 
     @Test
