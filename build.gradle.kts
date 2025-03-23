@@ -31,6 +31,9 @@ allprojects {
         implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.4.3")
 
         implementation("com.h2database:h2:2.3.232")
+        implementation("org.postgresql:postgresql:42.7.2")
+
+        implementation("io.github.cdimascio:dotenv-java:3.0.0")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.3")
         testImplementation("nl.jqno.equalsverifier:equalsverifier:3.19.1")
