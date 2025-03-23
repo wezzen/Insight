@@ -54,3 +54,6 @@ target/
 
 # Windows-generated files
 Desktop.ini
+
+# Secrets
+*.env
