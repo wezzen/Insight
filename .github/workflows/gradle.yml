@@ -51,7 +51,7 @@ jobs:
       if: always()
       run: |
         mkdir -p ${{ env.JUNIT_TESTS_REPORTS }}
-        find . -type f -name "TEST-*.xml" -exec cp {} ${{ env.JUNIT_TEST_REPORTS }}/ \;
+        find . -type f -name "TEST-*.xml" -exec cp {} ${{ env.JUNIT_TESTS_REPORTS }}/ \;
 
     - name: Parse XML Junit reports
       if: always()
