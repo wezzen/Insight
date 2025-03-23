@@ -1,6 +1,6 @@
 [![Build status](https://github.com/wezzen/Insight/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/wezzen/Insight/actions/workflows/gradle.yml)
 [![codecov](https://codecov.io/gh/wezzen/Insight/branch/master/graph/badge.svg?token=vXlQBfhkJY)](https://codecov.io/gh/wezzen/Insight)
-[![Test Count](https://gist.github.com/wezzen/bca05ce0e3c76560912915610c8d4a25/raw/insight_badge_total_test.svg)](https://github.com/wezzen/Insight)
+[![Test Count](https://gist.githubusercontent.com/wezzen/bca05ce0e3c76560912915610c8d4a25/raw/insight_badge_total_test.svg)](https://github.com/wezzen/Insight)
 [![Test Passed](https://gist.github.com/wezzen/8df3f1b393c001def23c7e9530da6d7c/raw/insight_badge_passed_test.svg)](https://github.com/wezzen/Insight)
 [![Test Skipped](https://gist.github.com/wezzen/e0439c5aefd00e97c7977a2f35028779/raw/insight_badge_skipped_test.svg)](https://github.com/wezzen/Insight)
 [![Test Error](https://gist.github.com/wezzen/421522329bded220fccb718d801a202b/raw/insight_badge_error_test.svg)](https://github.com/wezzen/Insight)
