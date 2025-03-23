@@ -42,32 +42,47 @@ jobs:
     - name: Gradle tests
       run: ./gradlew test jacocoTestReport
 
+  uploads:
+    runs-on: ubuntu-latest
+    needs: build
+    continue-on-error: true
+    steps:
+
     - name: Upload coverage to CodeCov
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
 
+  badges:
+    runs-on: ubuntu-latest
+    needs: build
+    continue-on-error: true
+    steps:
     - name: Collect JUnit xml reports
-      if: always()
       run: |
         mkdir -p ${{ env.JUNIT_TESTS_REPORTS }}
         find . -type f -name "TEST-*.xml" -exec cp {} ${{ env.JUNIT_TESTS_REPORTS }}/ \;
 
     - name: Parse XML Junit reports
-      if: always()
-      id: parse-results
       uses: ./.github/workflows/actions/parse-xml-action
       with:
         dir-path: ${{ env.JUNIT_TESTS_REPORTS }}
 
     - name: Output number of tests
-      if: always()
-      id: create_badges_tests
       env:
         LABEL_TOTAL: tests
         COLOR_TOTAL: cyan
+        LABEL_PASSED: passed
+        COLOR_PASSED: green
+        LABEL_SKIPPED: skipped
+        COLOR_SKIPPED: yellow
+        LABEL_ERROR: error
+        COLOR_ERROR: red
       run: |
         curl -s -f https://badgen.net/badge/${{env.LABEL_TOTAL}}/${{env.STATUS_TOTAL}}/${{env.COLOR_TOTAL}} > insight_badge_total_test.svg
+        curl -s -f https://badgen.net/badge/${{env.LABEL_PASSED}}/${{env.STATUS_PASSED}}/${{env.COLOR_PASSED}} > insight_badge_passed_test.svg
+        curl -s -f https://badgen.net/badge/${{env.LABEL_SKIPPED}}/${{env.STATUS_SKIPPED}}/${{env.COLOR_SKIPPED}} > insight_badge_skipped_test.svg
+        curl -s -f https://badgen.net/badge/${{env.LABEL_ERROR}}/${{env.STATUS_ERROR}}/${{env.COLOR_ERROR}} > insight_badge_error_test.svg
 
     - name: Upload badges_total to Gist
       env:
@@ -76,13 +91,54 @@ jobs:
       if: >
           github.event.repository.fork == false
           && steps.create_badges_tests.outcome == 'success'
-          && always()
       with:
           auth: ${{ secrets.GIST_TOKEN }}
           gist_url: https://gist.github.com/wezzen/bca05ce0e3c76560912915610c8d4a25
           gist_title: insight_badge_total_test.svg
           gist_description: Total Tests
           github_file: insight_badge_total_test.svg
+
+    - name: Upload badges_passed to Gist
+      env:
+        GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+      uses: popsiclestick/gist-sync-action@v1.2.0
+      if: >
+        github.event.repository.fork == false
+        && steps.create_badges_tests.outcome == 'success'
+      with:
+        auth: ${{ secrets.GIST_TOKEN }}
+        gist_url: https://gist.github.com/wezzen/8df3f1b393c001def23c7e9530da6d7c
+        gist_title: insight_badge_passed_test.svg
+        gist_description: Passed Tests
+        github_file: insight_badge_passed_test.svg
+
+    - name: Upload badges_skipped to Gist
+      env:
+        GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+      uses: popsiclestick/gist-sync-action@v1.2.0
+      if: >
+        github.event.repository.fork == false
+        && steps.create_badges_tests.outcome == 'success'
+      with:
+        auth: ${{ secrets.GIST_TOKEN }}
+        gist_url: https://gist.github.com/wezzen/e0439c5aefd00e97c7977a2f35028779
+        gist_title: insight_badge_skipped_test.svg
+        gist_description: Skipped Tests
+        github_file: insight_badge_skipped_test.svg
+
+    - name: Upload badges_error to Gist
+      env:
+        GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+      uses: popsiclestick/gist-sync-action@v1.2.0
+      if: >
+        github.event.repository.fork == false
+        && steps.create_badges_tests.outcome == 'success'
+      with:
+        auth: ${{ secrets.GIST_TOKEN }}
+        gist_url: https://gist.github.com/wezzen/421522329bded220fccb718d801a202b
+        gist_title: insight_badge_error_test.svg
+        gist_description: Error Tests
+        github_file: insight_badge_error_test.svg
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
