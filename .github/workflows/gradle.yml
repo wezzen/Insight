@@ -72,12 +72,12 @@ jobs:
     - name: Upload badges_total to Gist
       env:
         GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
-        uses: popsiclestick/gist-sync-action@v1.2.0
-        if: >
+      uses: popsiclestick/gist-sync-action@v1.2.0
+      if: >
           github.event.repository.fork == false
           && steps.create_badges_tests.outcome == 'success'
           && always()
-        with:
+      with:
           auth: ${{ secrets.GIST_TOKEN }}
           gist_url: https://gist.github.com/wezzen
           gist_title: badge_total.svg
