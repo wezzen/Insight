@@ -42,12 +42,26 @@ jobs:
     - name: Gradle tests
       run: ./gradlew test jacocoTestReport
 
+    - name: Collect JUnit xml reports
+      run: |
+        mkdir -p ${{ env.JUNIT_TESTS_REPORTS }}
+        find . -type f -name "TEST-*.xml" -exec cp {} ${{ env.JUNIT_TESTS_REPORTS }}/ \;
+
+    - name: Upload JUnit test reports as artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: junit-reports
+        path: ${{ env.JUNIT_TESTS_REPORTS }}
+
   uploads:
     runs-on: ubuntu-latest
     needs: build
     continue-on-error: true
     steps:
-    - uses: actions/checkout@v4
+    - name: Download JUnit test reports
+      uses: actions/download-artifact@v3
+      with:
+        name: junit-reports
 
     - name: Upload coverage to CodeCov
       uses: codecov/codecov-action@v5
@@ -59,11 +73,11 @@ jobs:
     needs: build
     continue-on-error: true
     steps:
-    - uses: actions/checkout@v4
-    - name: Collect JUnit xml reports
-      run: |
-        mkdir -p ${{ env.JUNIT_TESTS_REPORTS }}
-        find . -type f -name "TEST-*.xml" -exec cp {} ${{ env.JUNIT_TESTS_REPORTS }}/ \;
+
+    - name: Download JUnit test reports
+      uses: actions/download-artifact@v3
+      with:
+        name: junit-reports
 
     - name: Parse XML Junit reports
       uses: ./.github/workflows/actions/parse-xml-action
