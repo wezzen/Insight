@@ -1,0 +1,27 @@
+name: 'Parse XML Reports'
+description: 'Parse XML reports and output test counts'
+inputs:
+  dir-path:
+    description: 'Directory containing XML reports'
+    required: true
+outputs:
+  tests:
+    description: 'Total number of tests'
+  passed:
+    description: 'Number of passed tests'
+  skipped:
+    description: 'Number of skipped tests'
+  errors:
+    description: 'Number of test errors'
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Run Python script
+      shell: bash
+      run: |
+        python ./.github/workflows/actions/parse-xml-action/main.py ${{ inputs.dir-path }}

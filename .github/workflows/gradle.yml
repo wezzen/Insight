@@ -13,6 +13,9 @@ on:
   pull_request:
     branches: [ "master" ]
 
+env:
+  JUNIT_TESTS_REPORTS: ./combined-jacoco-reports
+
 jobs:
   build:
 
@@ -34,13 +37,52 @@ jobs:
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
     - name: Build with Gradle Wrapper
-      run: ./gradlew build
+      run: ./gradlew build -x tests
+
+    - name: Gradle tests
+      run: ./gradlew test jacocoTestReport
 
     - name: Upload coverage to CodeCov
       uses: codecov/codecov-action@v5
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
 
+    - name: Collect JUnit xml reports
+      if: always()
+      run: |
+        mkdir -p ${{ env.JUNIT_TESTS_REPORTS }}
+        find . -type f -name "TEST-*.xml" -exec cp {} ${{ env.JUNIT_TEST_REPORTS }}/ \;
+
+    - name: Parse XML Junit reports
+      if: always()
+      id: parse-results
+      uses: ./.github/workflows/actions/parse-xml-action
+      with:
+        dir-path: ${{ env.JUNIT_TESTS_REPORTS }}
+
+    - name: Output number of tests
+      if: always()
+      id: create_badges_tests
+      env:
+        LABEL_TOTAL: tests
+        COLOR_TOTAL: cyan
+      run: |
+        curl -s -f https://badgen.net/badge/${{env.LABEL_TOTAL}}/${{env.STATUS_TOTAL}}/${{env.COLOR_TOTAL}} > insight_badge_total_test.svg
+
+    - name: Upload badges_total to Gist
+      env:
+        GIST_TOKEN: ${{ secrets.GIST_TOKEN }}
+        uses: popsiclestick/gist-sync-action@v1.2.0
+        if: >
+          github.event.repository.fork == false
+          && steps.create_badges_tests.outcome == 'success'
+          && always()
+        with:
+          auth: ${{ secrets.GIST_TOKEN }}
+          gist_url: https://gist.github.com/wezzen
+          gist_title: badge_total.svg
+          gist_description: Total Tests
+          github_file: badge_total.svg
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
