@@ -88,6 +88,7 @@ jobs:
         dir-path: ${{ env.JUNIT_TESTS_REPORTS }}
 
     - name: Output number of tests
+      id: create_badges_tests
       env:
         LABEL_TOTAL: tests
         COLOR_TOTAL: cyan
@@ -101,7 +102,7 @@ jobs:
         curl -s -f https://badgen.net/badge/${{env.LABEL_TOTAL}}/${{env.STATUS_TOTAL}}/${{env.COLOR_TOTAL}} > insight_badge_total_test.svg
         curl -s -f https://badgen.net/badge/${{env.LABEL_PASSED}}/${{env.STATUS_PASSED}}/${{env.COLOR_PASSED}} > insight_badge_passed_test.svg
         curl -s -f https://badgen.net/badge/${{env.LABEL_SKIPPED}}/${{env.STATUS_SKIPPED}}/${{env.COLOR_SKIPPED}} > insight_badge_skipped_test.svg
-        curl -s -f https://badgen.net/badge/${{env.LABEL_ERROR}}/${{env.STATUS_ERROR}}/${{env.COLOR_ERROR}} > insight_badge_error_test.svg
+        curl -s -f https://badgen.net/badge/${{env.LABEL_ERROR}}/${{env.STATUS_ERRORS}}/${{env.COLOR_ERROR}} > insight_badge_error_test.svg
 
     - name: Upload badges_total to Gist
       env:
