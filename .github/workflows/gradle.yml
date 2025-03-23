@@ -62,6 +62,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: junit-reports
+        path: ${{ env.JUNIT_TESTS_REPORTS }}
 
     - name: Upload coverage to CodeCov
       uses: codecov/codecov-action@v5
@@ -79,6 +80,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: junit-reports
+        path: ${{ env.JUNIT_TESTS_REPORTS }}
 
     - name: Parse XML Junit reports
       uses: ./.github/workflows/actions/parse-xml-action
