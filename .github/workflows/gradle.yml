@@ -48,7 +48,7 @@ jobs:
         find . -type f -name "TEST-*.xml" -exec cp {} ${{ env.JUNIT_TESTS_REPORTS }}/ \;
 
     - name: Upload JUnit test reports as artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: junit-reports
         path: ${{ env.JUNIT_TESTS_REPORTS }}
@@ -59,7 +59,7 @@ jobs:
     continue-on-error: true
     steps:
     - name: Download JUnit test reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: junit-reports
 
@@ -75,7 +75,7 @@ jobs:
     steps:
 
     - name: Download JUnit test reports
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: junit-reports
 
