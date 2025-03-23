@@ -2,7 +2,6 @@ package com.github.wezzen.insight.controller;
 
 import com.github.wezzen.insight.dto.response.CategoryDTO;
 import com.github.wezzen.insight.service.CategoryService;
-import com.github.wezzen.insight.model.Category;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +20,8 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryDTO> createCategory(@RequestBody final Category category) {
-        final CategoryDTO created = categoryService.createCategory(category.getName());
+    public ResponseEntity<CategoryDTO> createCategory(@RequestBody final String category) {
+        final CategoryDTO created = categoryService.createCategory(category);
         return ResponseEntity.ok(created);
     }
 
