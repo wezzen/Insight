@@ -37,7 +37,7 @@ jobs:
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
     - name: Build with Gradle Wrapper
-      run: ./gradlew build -x tests
+      run: ./gradlew build -x test
 
     - name: Gradle tests
       run: ./gradlew test jacocoTestReport
@@ -80,9 +80,9 @@ jobs:
       with:
           auth: ${{ secrets.GIST_TOKEN }}
           gist_url: https://gist.github.com/wezzen
-          gist_title: badge_total.svg
+          gist_title: insight_badge_total_test.svg
           gist_description: Total Tests
-          github_file: badge_total.svg
+          github_file: insight_badge_total_test.svg
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
