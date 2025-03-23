@@ -47,6 +47,7 @@ jobs:
     needs: build
     continue-on-error: true
     steps:
+    - uses: actions/checkout@v4
 
     - name: Upload coverage to CodeCov
       uses: codecov/codecov-action@v5
@@ -58,6 +59,7 @@ jobs:
     needs: build
     continue-on-error: true
     steps:
+    - uses: actions/checkout@v4
     - name: Collect JUnit xml reports
       run: |
         mkdir -p ${{ env.JUNIT_TESTS_REPORTS }}
