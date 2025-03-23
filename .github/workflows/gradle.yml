@@ -79,7 +79,7 @@ jobs:
           && always()
       with:
           auth: ${{ secrets.GIST_TOKEN }}
-          gist_url: https://gist.github.com/wezzen
+          gist_url: https://gist.github.com/wezzen/bca05ce0e3c76560912915610c8d4a25
           gist_title: insight_badge_total_test.svg
           gist_description: Total Tests
           github_file: insight_badge_total_test.svg
