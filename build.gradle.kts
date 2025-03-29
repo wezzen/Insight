@@ -36,7 +36,7 @@ allprojects {
         implementation("io.github.cdimascio:dotenv-java:3.0.0")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.4")
-        testImplementation("nl.jqno.equalsverifier:equalsverifier:3.19.1")
+        testImplementation("nl.jqno.equalsverifier:equalsverifier:3.19.2")
         testImplementation(platform("org.junit:junit-bom:5.12.1"))
         testImplementation("org.junit.jupiter:junit-jupiter")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
