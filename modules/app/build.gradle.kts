@@ -1,3 +1,7 @@
+plugins {
+    id("org.springframework.boot") version "3.4.4"
+}
+
 dependencies {
     implementation(project(":controller"))
     implementation(project(":dto"))
