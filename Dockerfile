@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY ./modules/app/build/libs/app.jar app.jar
 
-COPY .env /app
-
 EXPOSE 8080
 
 # Запуск приложения
