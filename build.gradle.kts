@@ -33,8 +33,6 @@ allprojects {
         implementation("com.h2database:h2:2.3.232")
         implementation("org.postgresql:postgresql:42.7.5")
 
-        implementation("io.github.cdimascio:dotenv-java:3.2.0")
-
         testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.4")
         testImplementation("nl.jqno.equalsverifier:equalsverifier:3.19.2")
         testImplementation(platform("org.junit:junit-bom:5.12.1"))
