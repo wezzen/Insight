@@ -4,6 +4,7 @@ dependencies {
     implementation(project(":model"))
     implementation(project(":repository"))
     implementation(project(":service"))
+    implementation(project(":security"))
 }
 
 tasks.withType<JavaCompile> {

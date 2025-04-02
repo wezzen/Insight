@@ -15,5 +15,8 @@ project(":repository").projectDir = file("modules/repository")
 include("service")
 project(":service").projectDir = file("modules/service")
 
+include("security")
+project(":security").projectDir = file("modules/security")
+
 include("dto")
 project(":dto").projectDir = file("modules/dto")
