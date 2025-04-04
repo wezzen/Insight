@@ -23,7 +23,7 @@ jobs:
         run: ./gradlew build -x test
 
       - name: Build Docker image
-        run: docker build -t insight-app .
+        run: docker build -t wezzen/insight-app${{ github.event.release.tag_name }} .
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
@@ -32,4 +32,4 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Push Docker image to Docker Hub
-        run: docker push insight-app
+        run: docker push wezzen/insight-app:${{ github.event.release.tag_name }}
