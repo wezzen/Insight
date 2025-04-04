@@ -31,5 +31,8 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Show built images
+        run: docker images
+
       - name: Push Docker image to Docker Hub
         run: docker push wezzen/insight-app:${{ github.event.release.tag_name }}
