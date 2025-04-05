@@ -30,7 +30,6 @@ allprojects {
         implementation("org.springframework.boot:spring-boot-starter-web:3.4.4")
         implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.4.4")
 
-        implementation("com.h2database:h2:2.3.232")
         implementation("org.postgresql:postgresql:42.7.5")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.4")
