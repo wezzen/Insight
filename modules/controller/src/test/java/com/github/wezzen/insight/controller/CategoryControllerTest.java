@@ -1,6 +1,7 @@
 package com.github.wezzen.insight.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.wezzen.insight.dto.request.CreateCategoryRequest;
 import com.github.wezzen.insight.dto.response.CategoryDTO;
 import com.github.wezzen.insight.service.CategoryService;
 import org.junit.jupiter.api.AfterEach;
@@ -60,8 +61,10 @@ class CategoryControllerTest {
     void createCategoryTest() throws Exception {
         final CategoryDTO category = new CategoryDTO("Test Category");
         Mockito.when(categoryService.createCategory(Mockito.any())).thenReturn(category);
+        final CreateCategoryRequest request = new CreateCategoryRequest("Test Category");
 
-        mockMvc.perform(post("/categories").contentType(MediaType.APPLICATION_JSON_VALUE).content(category.name))
+        mockMvc.perform(post("/categories").contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(category.name));
 
@@ -92,8 +95,10 @@ class CategoryControllerTest {
     void deleteCategoryTest() throws Exception {
         final CategoryDTO category = new CategoryDTO("Test Category");
         Mockito.when(categoryService.createCategory(Mockito.any())).thenReturn(category);
+        final CreateCategoryRequest request = new CreateCategoryRequest("Test Category");
 
-        mockMvc.perform(post("/categories").contentType(MediaType.APPLICATION_JSON_VALUE).content(category.name))
+        mockMvc.perform(post("/categories").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(category.name));
 

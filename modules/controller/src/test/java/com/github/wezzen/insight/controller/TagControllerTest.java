@@ -1,5 +1,7 @@
 package com.github.wezzen.insight.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.wezzen.insight.dto.request.CreateTagRequest;
 import com.github.wezzen.insight.dto.response.TagDTO;
 import com.github.wezzen.insight.service.TagService;
 import org.junit.jupiter.api.AfterEach;
@@ -27,6 +29,8 @@ class TagControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
     private TagService tagService;
@@ -75,22 +79,26 @@ class TagControllerTest {
 
     @Test
     void createTagTest() throws Exception {
-        final TagDTO tag = new TagDTO("TestTag1");
-        Mockito.when(tagService.createTag(Mockito.anyString())).thenReturn(tag);
+        final TagDTO tagDTO = new TagDTO("TestTag1");
+        Mockito.when(tagService.createTag(Mockito.anyString())).thenReturn(tagDTO);
+        final CreateTagRequest request = new CreateTagRequest(tagDTO.tag);
 
-        mockMvc.perform(post("/tags").contentType(MediaType.APPLICATION_JSON_VALUE).content(tag.tag))
+        mockMvc.perform(post("/tags").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.tag").value(tag.tag));
+                .andExpect(jsonPath("$.tag").value(tagDTO.tag));
 
-        Mockito.verify(tagService, Mockito.times(1)).createTag(tag.tag);
+        Mockito.verify(tagService, Mockito.times(1)).createTag(tagDTO.tag);
     }
 
     @Test
     void deleteTagTest() throws Exception {
         final TagDTO tagDTO = new TagDTO("TestTag1");
         Mockito.when(tagService.createTag(Mockito.anyString())).thenReturn(tagDTO);
+        final CreateTagRequest request = new CreateTagRequest(tagDTO.tag);
 
-        mockMvc.perform(post("/tags").contentType(MediaType.APPLICATION_JSON_VALUE).content(tagDTO.tag))
+        mockMvc.perform(post("/tags").contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.tag").value(tagDTO.tag));
 

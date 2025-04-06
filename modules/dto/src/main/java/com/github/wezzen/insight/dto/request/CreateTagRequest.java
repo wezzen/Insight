@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Immutable;
 
 @Immutable
 @EqualsAndHashCode
-public class CreateTagRequest {
+public final class CreateTagRequest {
 
     public final String tag;
 

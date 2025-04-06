@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Immutable;
 
 @Immutable
 @EqualsAndHashCode
-public class CreateCategoryRequest {
+public final class CreateCategoryRequest {
 
     public final String name;
 
