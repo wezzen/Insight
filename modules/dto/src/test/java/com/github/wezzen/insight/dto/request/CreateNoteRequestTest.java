@@ -1,6 +1,5 @@
-package com.github.wezzen.insight.dto;
+package com.github.wezzen.insight.dto.request;
 
-import com.github.wezzen.insight.dto.request.CreateNoteRequest;
 import jakarta.annotation.Nonnull;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
