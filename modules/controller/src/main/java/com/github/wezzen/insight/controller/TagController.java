@@ -1,5 +1,6 @@
 package com.github.wezzen.insight.controller;
 
+import com.github.wezzen.insight.dto.request.CreateTagRequest;
 import com.github.wezzen.insight.dto.response.TagDTO;
 import com.github.wezzen.insight.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,8 @@ public class TagController {
     }
 
     @PostMapping
-    public ResponseEntity<TagDTO> createTag(@RequestBody final String tag) {
-        final TagDTO created = tagService.createTag(tag);
+    public ResponseEntity<TagDTO> createTag(@RequestBody final CreateTagRequest dto) {
+        final TagDTO created = tagService.createTag(dto.tag);
         return ResponseEntity.ok(created);
     }
 
