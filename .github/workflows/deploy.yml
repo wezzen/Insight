@@ -33,5 +33,5 @@ jobs:
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push push wezzen/insight-app:${{ github.event.release.tag_name }}
-          docker push push wezzen/insight-app:latest
+          docker push wezzen/insight-app:${{ github.event.release.tag_name }}
+          docker push wezzen/insight-app:latest
