@@ -42,7 +42,7 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: CI Badges
-      uses: GaelGirodon/ci-badges-action@v1.8.0
+      uses: GaelGirodon/ci-badges-action@1.9.0
       with:
         gist-id: ce7d1abd067064169575beb1c1781f98
         token: ${{ secrets.GIST_TOKEN }}
