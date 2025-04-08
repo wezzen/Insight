@@ -67,6 +67,7 @@ class NoteControllerTest {
     void getAllNotesSuccessTest() throws Exception {
         final List<NoteDTO> noteDTOS = List.of(
                 new NoteDTO(
+                        "TestTitle1",
                         "TestCategory1",
                         "TestContent1",
                         Set.of(
@@ -77,6 +78,7 @@ class NoteControllerTest {
                         "Remind1"
                 ),
                 new NoteDTO(
+                        "TestTitle2",
                         "TestCategory2",
                         "TestContent2",
                         Set.of(
@@ -87,6 +89,7 @@ class NoteControllerTest {
                         "Remind2"
                 ),
                 new NoteDTO(
+                        "TestTitle3",
                         "TestCategory3",
                         "TestContent3",
                         Set.of(
@@ -104,6 +107,7 @@ class NoteControllerTest {
         mockMvc.perform(get("/notes"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(noteDTOS.size()))
+                .andExpect(jsonPath("$[0].title").value("TestTitle1"))
                 .andExpect(jsonPath("$[0].category").value("TestCategory1"))
                 .andExpect(jsonPath("$[0].content").value("TestContent1"))
                 .andExpect(jsonPath("$[0].tags").value(hasSize(2)))
@@ -111,6 +115,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[0].tags").value(hasItem("TestTag2")))
                 .andExpect(jsonPath("$[0].createdAt").value("CreatedAt1"))
                 .andExpect(jsonPath("$[0].remind").value("Remind1"))
+                .andExpect(jsonPath("$[1].title").value("TestTitle2"))
                 .andExpect(jsonPath("$[1].category").value("TestCategory2"))
                 .andExpect(jsonPath("$[1].content").value("TestContent2"))
                 .andExpect(jsonPath("$[1].tags").value(hasSize(2)))
@@ -118,6 +123,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[1].tags").value(hasItem("TestTag4")))
                 .andExpect(jsonPath("$[1].createdAt").value("CreatedAt2"))
                 .andExpect(jsonPath("$[1].remind").value("Remind2"))
+                .andExpect(jsonPath("$[2].title").value("TestTitle3"))
                 .andExpect(jsonPath("$[2].category").value("TestCategory3"))
                 .andExpect(jsonPath("$[2].content").value("TestContent3"))
                 .andExpect(jsonPath("$[2].tags").value(hasSize(3)))
@@ -135,6 +141,7 @@ class NoteControllerTest {
         final Date createdAt = new Date();
         final Date remind = new Date();
         final NoteDTO noteDTO = new NoteDTO(
+                "TestTitle1",
                 "TestCategory1",
                 "TestContent1",
                 Set.of(
@@ -156,6 +163,7 @@ class NoteControllerTest {
         mockMvc.perform(post("/notes").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("TestTitle1"))
                 .andExpect(jsonPath("$.category").value("TestCategory1"))
                 .andExpect(jsonPath("$.content").value("TestContent1"))
                 .andExpect(jsonPath("$.tags").value(hasSize(2)))
@@ -173,6 +181,7 @@ class NoteControllerTest {
         final Date createdAt = new Date();
         final Date remind = new Date();
         final NoteDTO noteDTO = new NoteDTO(
+                "TestTitle1",
                 "TestCategory1",
                 "TestContent1",
                 Set.of(
@@ -194,6 +203,7 @@ class NoteControllerTest {
         mockMvc.perform(post("/notes").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("TestTitle1"))
                 .andExpect(jsonPath("$.category").value("TestCategory1"))
                 .andExpect(jsonPath("$.content").value("TestContent1"))
                 .andExpect(jsonPath("$.tags").value(hasSize(2)))
@@ -218,6 +228,7 @@ class NoteControllerTest {
         );
 
         final NoteDTO updatedNoteDTO = new NoteDTO(
+                "TestTitle1",
                 "TestCategory1",
                 newContent,
                 Set.of(
@@ -241,6 +252,7 @@ class NoteControllerTest {
         mockMvc.perform(put("/notes/update").contentType(MediaType.APPLICATION_JSON_VALUE)
                 .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("TestTitle1"))
                 .andExpect(jsonPath("$.category").value("TestCategory1"))
                 .andExpect(jsonPath("$.content").value("NewTestContent1"))
                 .andExpect(jsonPath("$.tags").value(hasSize(3)))
@@ -255,16 +267,17 @@ class NoteControllerTest {
     @Test
     void findNotesByAllTagsSuccessTest() throws Exception {
         final List<NoteDTO> noteDTOS = List.of(
-                new NoteDTO("TestCategory1", "TestContent1", Set.of("TestTag1", "TestTag2"), "CreatedAt1", "Remind1"),
-                new NoteDTO("TestCategory2", "TestContent2", Set.of("TestTag1", "TestTag2"), "CreatedAt2", "Remind2"),
-                new NoteDTO("TestCategory3", "TestContent3", Set.of("TestTag1", "TestTag2"), "CreatedAt3", "Remind3"),
-                new NoteDTO("TestCategory4", "TestContent4", Set.of("TestTag1", "TestTag2"), "CreatedAt4", "Remind4"),
-                new NoteDTO("TestCategory5", "TestContent5", Set.of("TestTag1", "TestTag2"), "CreatedAt5", "Remind5")
+                new NoteDTO("TestTitle1", "TestCategory1", "TestContent1", Set.of("TestTag1", "TestTag2"), "CreatedAt1", "Remind1"),
+                new NoteDTO("TestTitle2","TestCategory2", "TestContent2", Set.of("TestTag1", "TestTag2"), "CreatedAt2", "Remind2"),
+                new NoteDTO("TestTitle3","TestCategory3", "TestContent3", Set.of("TestTag1", "TestTag2"), "CreatedAt3", "Remind3"),
+                new NoteDTO("TestTitle4","TestCategory4", "TestContent4", Set.of("TestTag1", "TestTag2"), "CreatedAt4", "Remind4"),
+                new NoteDTO("TestTitle5","TestCategory5", "TestContent5", Set.of("TestTag1", "TestTag2"), "CreatedAt5", "Remind5")
         );
         Mockito.when(noteService.findByAllTags(Mockito.anySet())).thenReturn(noteDTOS);
         mockMvc.perform(get("/notes/s/tags/all").param("tags", "TestTag1", "TestTag2"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(noteDTOS.size()))
+                .andExpect(jsonPath("$[0].title").value("TestTitle1"))
                 .andExpect(jsonPath("$[0].category").value("TestCategory1"))
                 .andExpect(jsonPath("$[0].content").value("TestContent1"))
                 .andExpect(jsonPath("$[0].tags").value(hasSize(2)))
@@ -272,6 +285,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[0].tags").value(hasItem("TestTag2")))
                 .andExpect(jsonPath("$[0].createdAt").value("CreatedAt1"))
                 .andExpect(jsonPath("$[0].remind").value("Remind1"))
+                .andExpect(jsonPath("$[1].title").value("TestTitle2"))
                 .andExpect(jsonPath("$[1].category").value("TestCategory2"))
                 .andExpect(jsonPath("$[1].content").value("TestContent2"))
                 .andExpect(jsonPath("$[1].tags").value(hasSize(2)))
@@ -279,6 +293,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[1].tags").value(hasItem("TestTag2")))
                 .andExpect(jsonPath("$[1].createdAt").value("CreatedAt2"))
                 .andExpect(jsonPath("$[1].remind").value("Remind2"))
+                .andExpect(jsonPath("$[2].title").value("TestTitle3"))
                 .andExpect(jsonPath("$[2].category").value("TestCategory3"))
                 .andExpect(jsonPath("$[2].content").value("TestContent3"))
                 .andExpect(jsonPath("$[2].tags").value(hasSize(2)))
@@ -286,6 +301,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[2].tags").value(hasItem("TestTag2")))
                 .andExpect(jsonPath("$[2].createdAt").value("CreatedAt3"))
                 .andExpect(jsonPath("$[2].remind").value("Remind3"))
+                .andExpect(jsonPath("$[3].title").value("TestTitle4"))
                 .andExpect(jsonPath("$[3].category").value("TestCategory4"))
                 .andExpect(jsonPath("$[3].content").value("TestContent4"))
                 .andExpect(jsonPath("$[3].tags").value(hasSize(2)))
@@ -293,6 +309,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[3].tags").value(hasItem("TestTag2")))
                 .andExpect(jsonPath("$[3].createdAt").value("CreatedAt4"))
                 .andExpect(jsonPath("$[3].remind").value("Remind4"))
+                .andExpect(jsonPath("$[4].title").value("TestTitle5"))
                 .andExpect(jsonPath("$[4].category").value("TestCategory5"))
                 .andExpect(jsonPath("$[4].content").value("TestContent5"))
                 .andExpect(jsonPath("$[4].tags").value(hasSize(2)))
@@ -306,40 +323,45 @@ class NoteControllerTest {
     @Test
     void findNotesByAnyTagsSuccessTest() throws Exception {
         final List<NoteDTO> noteDTOS = List.of(
-                new NoteDTO("TestCategory1", "TestContent1", Set.of("TestTag1", "TestTag2"), "CreatedAt1", "Remind1"),
-                new NoteDTO("TestCategory2", "TestContent2", Set.of("TestTag1", "TestTag3"), "CreatedAt2", "Remind2"),
-                new NoteDTO("TestCategory3", "TestContent3", Set.of("TestTag1", "TestTag4", "TestTag5"), "CreatedAt3", "Remind3"),
-                new NoteDTO("TestCategory4", "TestContent4", Set.of("TestTag1"), "CreatedAt4", "Remind4"),
-                new NoteDTO("TestCategory5", "TestContent5", Set.of("TestTag1", "TestTag5"), "CreatedAt5", "Remind5")
+                new NoteDTO("TestTitle1", "TestCategory1", "TestContent1", Set.of("TestTag1", "TestTag2"), "CreatedAt1", "Remind1"),
+                new NoteDTO("TestTitle2", "TestCategory2", "TestContent2", Set.of("TestTag1", "TestTag3"), "CreatedAt2", "Remind2"),
+                new NoteDTO("TestTitle3", "TestCategory3", "TestContent3", Set.of("TestTag1", "TestTag4", "TestTag5"), "CreatedAt3", "Remind3"),
+                new NoteDTO("TestTitle4", "TestCategory4", "TestContent4", Set.of("TestTag1"), "CreatedAt4", "Remind4"),
+                new NoteDTO("TestTitle5", "TestCategory5", "TestContent5", Set.of("TestTag1", "TestTag5"), "CreatedAt5", "Remind5")
         );
         Mockito.when(noteService.findByAnyTag(Mockito.anySet())).thenReturn(noteDTOS);
         mockMvc.perform(get("/notes/s/tags/any").param("tags", "TestTag1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(noteDTOS.size()))
+                .andExpect(jsonPath("$[0].title").value("TestTitle1"))
                 .andExpect(jsonPath("$[0].category").value("TestCategory1"))
                 .andExpect(jsonPath("$[0].content").value("TestContent1"))
                 .andExpect(jsonPath("$[0].tags").value(hasSize(2)))
                 .andExpect(jsonPath("$[0].tags").value(hasItem("TestTag1")))
                 .andExpect(jsonPath("$[0].createdAt").value("CreatedAt1"))
                 .andExpect(jsonPath("$[0].remind").value("Remind1"))
+                .andExpect(jsonPath("$[1].title").value("TestTitle2"))
                 .andExpect(jsonPath("$[1].category").value("TestCategory2"))
                 .andExpect(jsonPath("$[1].content").value("TestContent2"))
                 .andExpect(jsonPath("$[1].tags").value(hasSize(2)))
                 .andExpect(jsonPath("$[1].tags").value(hasItem("TestTag1")))
                 .andExpect(jsonPath("$[1].createdAt").value("CreatedAt2"))
                 .andExpect(jsonPath("$[1].remind").value("Remind2"))
+                .andExpect(jsonPath("$[2].title").value("TestTitle3"))
                 .andExpect(jsonPath("$[2].category").value("TestCategory3"))
                 .andExpect(jsonPath("$[2].content").value("TestContent3"))
                 .andExpect(jsonPath("$[2].tags").value(hasSize(3)))
                 .andExpect(jsonPath("$[2].tags").value(hasItem("TestTag1")))
                 .andExpect(jsonPath("$[2].createdAt").value("CreatedAt3"))
                 .andExpect(jsonPath("$[2].remind").value("Remind3"))
+                .andExpect(jsonPath("$[3].title").value("TestTitle4"))
                 .andExpect(jsonPath("$[3].category").value("TestCategory4"))
                 .andExpect(jsonPath("$[3].content").value("TestContent4"))
                 .andExpect(jsonPath("$[3].tags").value(hasSize(1)))
                 .andExpect(jsonPath("$[3].tags").value(hasItem("TestTag1")))
                 .andExpect(jsonPath("$[3].createdAt").value("CreatedAt4"))
                 .andExpect(jsonPath("$[3].remind").value("Remind4"))
+                .andExpect(jsonPath("$[4].title").value("TestTitle5"))
                 .andExpect(jsonPath("$[4].category").value("TestCategory5"))
                 .andExpect(jsonPath("$[4].content").value("TestContent5"))
                 .andExpect(jsonPath("$[4].tags").value(hasSize(2)))
@@ -352,15 +374,16 @@ class NoteControllerTest {
     @Test
     void findNotesByCategorySuccessTest() throws Exception {
         final List<NoteDTO> noteDTOS = List.of(
-                new NoteDTO("TestCategory1", "TestContent1", Set.of("TestTag1", "TestTag2"), "CreatedAt1", "Remind1"),
-                new NoteDTO("TestCategory1", "TestContent2", Set.of("TestTag1", "TestTag3"), "CreatedAt2", "Remind2"),
-                new NoteDTO("TestCategory1", "TestContent3", Set.of("TestTag7", "TestTag8"), "CreatedAt3", "Remind3"),
-                new NoteDTO("TestCategory1", "TestContent4", Set.of("TestTag1", "TestTag2", "TestTag10"), "CreatedAt4", "Remind4")
+                new NoteDTO("TestTitle1", "TestCategory1", "TestContent1", Set.of("TestTag1", "TestTag2"), "CreatedAt1", "Remind1"),
+                new NoteDTO("TestTitle2", "TestCategory1", "TestContent2", Set.of("TestTag1", "TestTag3"), "CreatedAt2", "Remind2"),
+                new NoteDTO("TestTitle3", "TestCategory1", "TestContent3", Set.of("TestTag7", "TestTag8"), "CreatedAt3", "Remind3"),
+                new NoteDTO("TestTitle4", "TestCategory1", "TestContent4", Set.of("TestTag1", "TestTag2", "TestTag10"), "CreatedAt4", "Remind4")
         );
         Mockito.when(noteService.findByCategory(Mockito.any(Category.class))).thenReturn(noteDTOS);
         mockMvc.perform(get("/notes/s/category/{categoryName}", "TestCategory1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(noteDTOS.size()))
+                .andExpect(jsonPath("$[0].title").value("TestTitle1"))
                 .andExpect(jsonPath("$[0].category").value("TestCategory1"))
                 .andExpect(jsonPath("$[0].content").value("TestContent1"))
                 .andExpect(jsonPath("$[0].tags").value(hasSize(2)))
@@ -368,6 +391,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[0].tags").value(hasItem("TestTag2")))
                 .andExpect(jsonPath("$[0].createdAt").value("CreatedAt1"))
                 .andExpect(jsonPath("$[0].remind").value("Remind1"))
+                .andExpect(jsonPath("$[1].title").value("TestTitle2"))
                 .andExpect(jsonPath("$[1].category").value("TestCategory1"))
                 .andExpect(jsonPath("$[1].content").value("TestContent2"))
                 .andExpect(jsonPath("$[1].tags").value(hasSize(2)))
@@ -375,6 +399,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[1].tags").value(hasItem("TestTag3")))
                 .andExpect(jsonPath("$[1].createdAt").value("CreatedAt2"))
                 .andExpect(jsonPath("$[1].remind").value("Remind2"))
+                .andExpect(jsonPath("$[2].title").value("TestTitle3"))
                 .andExpect(jsonPath("$[2].category").value("TestCategory1"))
                 .andExpect(jsonPath("$[2].content").value("TestContent3"))
                 .andExpect(jsonPath("$[2].tags").value(hasSize(2)))
@@ -382,6 +407,7 @@ class NoteControllerTest {
                 .andExpect(jsonPath("$[2].tags").value(hasItem("TestTag8")))
                 .andExpect(jsonPath("$[2].createdAt").value("CreatedAt3"))
                 .andExpect(jsonPath("$[2].remind").value("Remind3"))
+                .andExpect(jsonPath("$[3].title").value("TestTitle4"))
                 .andExpect(jsonPath("$[3].category").value("TestCategory1"))
                 .andExpect(jsonPath("$[3].content").value("TestContent4"))
                 .andExpect(jsonPath("$[3].tags").value(hasSize(3)))
@@ -398,6 +424,7 @@ class NoteControllerTest {
         final Date createdAt = new Date();
         final Date remind = new Date();
         final NoteDTO noteDTO = new NoteDTO(
+                "TestTitle1",
                 "TestCategory1",
                 "TestContent1",
                 Set.of(
@@ -419,6 +446,7 @@ class NoteControllerTest {
         mockMvc.perform(post("/notes").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("TestTitle1"))
                 .andExpect(jsonPath("$.category").value("TestCategory1"))
                 .andExpect(jsonPath("$.content").value("TestContent1"))
                 .andExpect(jsonPath("$.tags").value(hasSize(2)))

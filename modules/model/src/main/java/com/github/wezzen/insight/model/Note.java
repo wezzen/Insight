@@ -18,6 +18,7 @@ public class Note {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private long id;
+    private String title;
     private String content;
     @ManyToOne
     @JoinColumn(name = "category_name")

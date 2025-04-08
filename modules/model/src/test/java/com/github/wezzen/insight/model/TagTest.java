@@ -22,8 +22,8 @@ class TagTest {
 
     @Test
     void equalsAndHashCodeTest() {
-        final Note note1 = new Note(0L, "TestContet", null, new Date(), Set.of(new Tag("TestTag1")), new Date());
-        final Note note2 = new Note(1L, "TestContet", null, new Date(), Set.of(new Tag("TestTag1")), new Date());
+        final Note note1 = new Note(0L, "TestTitle", "TestContet", null, new Date(), Set.of(new Tag("TestTag1")), new Date());
+        final Note note2 = new Note(1L, "TestTitle", "TestContet", null, new Date(), Set.of(new Tag("TestTag1")), new Date());
         EqualsVerifier.forClass(Tag.class)
                 .withIgnoredAnnotations(Nonnull.class)
                 .withPrefabValues(Note.class, note1, note2)

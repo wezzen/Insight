@@ -34,9 +34,10 @@ class NoteServiceTest {
     @Test
     void convertTest() {
         final Date now = new Date();
-        final Note note = new Note(0, "Test Content", new Category("TestCategory"), now,
+        final Note note = new Note(0, "TestTitle", "Test Content", new Category("TestCategory"), now,
                 Set.of(new Tag("TestTag1"), new Tag("TestTag2")), now);
         final NoteDTO dto = noteService.convert(note);
+        assertEquals(note.getTitle(), dto.title);
         assertEquals(note.getCategory().getName(), dto.category);
         assertEquals(note.getContent(), dto.content);
         assertEquals(note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), dto.tags);
@@ -49,7 +50,7 @@ class NoteServiceTest {
         final Category category = new Category("Test Category");
         final Tag tag = new Tag("Test Tag");
         final Date now = new Date();
-        final Note note = new Note(0, "Test Content", category, now, Set.of(tag), now);
+        final Note note = new Note(0, "TestTitle", "Test Content", category, now, Set.of(tag), now);
         Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.of(category));
         Mockito.when(tagRepository.findById(tag.getTag())).thenReturn(Optional.of(tag));
 
@@ -58,6 +59,7 @@ class NoteServiceTest {
         final NoteDTO createdNote = noteService.createNote(note.getCategory(), note.getContent(), note.getTags(), note.getReminder());
 
         assertNotNull(createdNote);
+        assertEquals(note.getTitle(), createdNote.title);
         assertEquals(note.getCategory().getName(), createdNote.category);
         assertEquals(note.getContent(), createdNote.content);
         assertEquals(note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), createdNote.tags);
@@ -70,7 +72,7 @@ class NoteServiceTest {
         final Category category = new Category("Test Category");
         final Tag tag = new Tag("Test Tag");
         final Date now = new Date();
-        final Note note = new Note(0, "Test Content", category, now, Set.of(tag), now);
+        final Note note = new Note(0, "TestTitle", "Test Content", category, now, Set.of(tag), now);
         Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.of(category));
         Mockito.when(tagRepository.findById(tag.getTag())).thenReturn(Optional.empty());
         Mockito.when(tagRepository.save(Mockito.any())).thenReturn(tag);
@@ -80,6 +82,7 @@ class NoteServiceTest {
         final NoteDTO createdNote = noteService.createNote(note.getCategory(), note.getContent(), note.getTags(), note.getReminder());
 
         assertNotNull(createdNote);
+        assertEquals(note.getTitle(), createdNote.title);
         assertEquals(note.getCategory().getName(), createdNote.category);
         assertEquals(note.getContent(), createdNote.content);
         assertEquals(note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), createdNote.tags);
@@ -92,7 +95,7 @@ class NoteServiceTest {
         final Category category = new Category("Test Category");
         final Tag tag = new Tag("Test Tag");
         final Date now = new Date();
-        final Note note = new Note(0, "Test Content", category, now, Set.of(tag), now);
+        final Note note = new Note(0, "TestTitle", "Test Content", category, now, Set.of(tag), now);
         Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.empty());
         Mockito.when(tagRepository.findById(tag.getTag())).thenReturn(Optional.of(tag));
 
@@ -114,6 +117,7 @@ class NoteServiceTest {
         final List<Note> notes = List.of(
                 new Note(
                         1,
+                        "TestTitle1",
                         "Test Category1",
                         new Category("Test Content1"),
                         new Date(),
@@ -122,6 +126,7 @@ class NoteServiceTest {
                 ),
                 new Note(
                         2,
+                        "TestTitle2",
                         "Test Category2",
                         new Category("Test Content2"),
                         new Date(),
@@ -130,6 +135,7 @@ class NoteServiceTest {
                 ),
                 new Note(
                         3,
+                        "TestTitle3",
                         "Test Category3",
                         new Category("Test Content3"),
                         new Date(),
@@ -141,18 +147,21 @@ class NoteServiceTest {
         final List<NoteDTO> fetchedNotes = noteService.getAllNotes();
         assertNotNull(fetchedNotes);
         assertEquals(notes.size(), fetchedNotes.size());
-        assertEquals(notes.get(0).getCategory().getName(), fetchedNotes.get(0).category);
-        assertEquals(notes.get(0).getContent(), fetchedNotes.get(0).content);
-        assertEquals(notes.get(0).getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.get(0).tags);
-        assertEquals(notes.get(0).getCreatedAt().toString(), fetchedNotes.get(0).createdAt);
-        assertEquals(notes.get(0).getReminder().toString(), fetchedNotes.get(0).remind);
+        assertEquals(notes.getFirst().getTitle(), fetchedNotes.getFirst().title);
+        assertEquals(notes.getFirst().getCategory().getName(), fetchedNotes.getFirst().category);
+        assertEquals(notes.getFirst().getContent(), fetchedNotes.getFirst().content);
+        assertEquals(notes.getFirst().getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.getFirst().tags);
+        assertEquals(notes.getFirst().getCreatedAt().toString(), fetchedNotes.getFirst().createdAt);
+        assertEquals(notes.getFirst().getReminder().toString(), fetchedNotes.getFirst().remind);
 
+        assertEquals(notes.get(1).getTitle(), fetchedNotes.get(1).title);
         assertEquals(notes.get(1).getCategory().getName(), fetchedNotes.get(1).category);
         assertEquals(notes.get(1).getContent(), fetchedNotes.get(1).content);
         assertEquals(notes.get(1).getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.get(1).tags);
         assertEquals(notes.get(1).getCreatedAt().toString(), fetchedNotes.get(1).createdAt);
         assertEquals(notes.get(1).getReminder().toString(), fetchedNotes.get(1).remind);
 
+        assertEquals(notes.get(2).getTitle(), fetchedNotes.get(2).title);
         assertEquals(notes.get(2).getCategory().getName(), fetchedNotes.get(2).category);
         assertEquals(notes.get(2).getContent(), fetchedNotes.get(2).content);
         assertEquals(notes.get(2).getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.get(2).tags);
@@ -171,26 +180,29 @@ class NoteServiceTest {
         final Date createdAt = new Date();
         final Date remind = new Date();
         final List<Note> noteDTOS = List.of(
-                new Note(0L, "TestContent1", target, createdAt, Set.of(tag1, tag2), remind),
-                new Note(1L, "TestContent2", target, createdAt, Set.of(tag1), remind),
-                new Note(2L, "TestContent3", target, createdAt, Set.of(tag1, tag3), remind)
+                new Note(0L, "TestTitle1", "TestContent1", target, createdAt, Set.of(tag1, tag2), remind),
+                new Note(1L, "TestTitle2", "TestContent2", target, createdAt, Set.of(tag1), remind),
+                new Note(2L, "TestTitle3", "TestContent3", target, createdAt, Set.of(tag1, tag3), remind)
         );
         Mockito.when(noteRepository.getAllByCategory(target)).thenReturn(noteDTOS);
         final List<NoteDTO> fetchedNotes = noteService.findByCategory(target);
         assertNotNull(fetchedNotes);
         assertEquals(noteDTOS.size(), fetchedNotes.size());
-        assertEquals(noteDTOS.get(0).getCategory().getName(), fetchedNotes.get(0).category);
-        assertEquals(noteDTOS.get(0).getContent(), fetchedNotes.get(0).content);
-        assertEquals(noteDTOS.get(0).getCreatedAt().toString(), fetchedNotes.get(0).createdAt);
-        assertEquals(noteDTOS.get(0).getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.get(0).tags);
-        assertEquals(noteDTOS.get(0).getReminder().toString(), fetchedNotes.get(0).remind);
+        assertEquals(noteDTOS.getFirst().getTitle(), fetchedNotes.getFirst().title);
+        assertEquals(noteDTOS.getFirst().getCategory().getName(), fetchedNotes.getFirst().category);
+        assertEquals(noteDTOS.getFirst().getContent(), fetchedNotes.getFirst().content);
+        assertEquals(noteDTOS.getFirst().getCreatedAt().toString(), fetchedNotes.getFirst().createdAt);
+        assertEquals(noteDTOS.getFirst().getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.getFirst().tags);
+        assertEquals(noteDTOS.getFirst().getReminder().toString(), fetchedNotes.getFirst().remind);
 
+        assertEquals(noteDTOS.get(1).getTitle(), fetchedNotes.get(1).title);
         assertEquals(noteDTOS.get(1).getCategory().getName(), fetchedNotes.get(1).category);
         assertEquals(noteDTOS.get(1).getContent(), fetchedNotes.get(1).content);
         assertEquals(noteDTOS.get(1).getCreatedAt().toString(), fetchedNotes.get(1).createdAt);
         assertEquals(noteDTOS.get(1).getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.get(1).tags);
         assertEquals(noteDTOS.get(1).getReminder().toString(), fetchedNotes.get(1).remind);
 
+        assertEquals(noteDTOS.get(2).getTitle(), fetchedNotes.get(2).title);
         assertEquals(noteDTOS.get(2).getCategory().getName(), fetchedNotes.get(2).category);
         assertEquals(noteDTOS.get(2).getContent(), fetchedNotes.get(2).content);
         assertEquals(noteDTOS.get(2).getCreatedAt().toString(), fetchedNotes.get(2).createdAt);
@@ -208,7 +220,7 @@ class NoteServiceTest {
         final Set<Tag> tags = Set.of(new Tag("Test Tag1"), new Tag("Test Tag2"));
         final Date createdAt = new Date();
         final Date reminder = new Date();
-        final Note note = new Note(0, oldContent, category, createdAt, tags, reminder);
+        final Note note = new Note(0, "Title", oldContent, category, createdAt, tags, reminder);
 
         Mockito.when(
                 noteRepository
@@ -269,16 +281,16 @@ class NoteServiceTest {
         final Category mockCategory = Mockito.mock(Category.class);
         final Date date = new Date();
         final List<Note> noteDTOS = List.of(
-                new Note(0L, "Test Content1", mockCategory, date, tags, date),
-                new Note(1L, "Test Content2", mockCategory, date, tags, date),
-                new Note(2L, "Test Content3", mockCategory, date, tags, date),
-                new Note(3L, "Test Content4", mockCategory, date, tags, date)
+                new Note(0L, "TestTitle1", "Test Content1", mockCategory, date, tags, date),
+                new Note(1L, "TestTitle2", "Test Content2", mockCategory, date, tags, date),
+                new Note(2L, "TestTitle3", "Test Content3", mockCategory, date, tags, date),
+                new Note(3L, "TestTitle4", "Test Content4", mockCategory, date, tags, date)
         );
         Mockito.when(noteRepository.findAllByTags(tags, tags.size())).thenReturn(noteDTOS);
         final List<NoteDTO> fetchedNoteDTOS = noteService.findByAllTags(tags);
         assertNotNull(fetchedNoteDTOS);
         assertEquals(noteDTOS.size(), fetchedNoteDTOS.size());
-        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(0).tags);
+        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.getFirst().tags);
         assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(1).tags);
         assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(2).tags);
         assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(3).tags);
@@ -302,18 +314,18 @@ class NoteServiceTest {
         final Category mockCategory = Mockito.mock(Category.class);
         final Date date = new Date();
         final List<Note> noteDTOS = List.of(
-                new Note(0L, "Test Content1", mockCategory, date, Set.of(tag1, tag2), date),
-                new Note(1L, "Test Content2", mockCategory, date, Set.of(tag1, tag3), date),
-                new Note(2L, "Test Content3", mockCategory, date, Set.of(tag1), date),
-                new Note(3L, "Test Content4", mockCategory, date, Set.of(tag3), date),
-                new Note(4L, "Test Content5", mockCategory, date, tags, date)
+                new Note(0L, "TestTitle1", "Test Content1", mockCategory, date, Set.of(tag1, tag2), date),
+                new Note(1L, "TestTitle2", "Test Content2", mockCategory, date, Set.of(tag1, tag3), date),
+                new Note(2L, "TestTitle3", "Test Content3", mockCategory, date, Set.of(tag1), date),
+                new Note(3L, "TestTitle4", "Test Content4", mockCategory, date, Set.of(tag3), date),
+                new Note(4L, "TestTitle5", "Test Content5", mockCategory, date, tags, date)
         );
 
         Mockito.when(noteRepository.getAllByTagsIn(tags)).thenReturn(noteDTOS);
         final List<NoteDTO> fetchedNoteDTOS = noteService.findByAnyTag(tags);
         assertNotNull(fetchedNoteDTOS);
         assertEquals(noteDTOS.size(), fetchedNoteDTOS.size());
-        assertEquals(Set.of(tag1, tag2).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(0).tags);
+        assertEquals(Set.of(tag1, tag2).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.getFirst().tags);
         assertEquals(Set.of(tag1, tag3).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(1).tags);
         assertEquals(Set.of(tag1).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(2).tags);
         assertEquals(Set.of(tag3).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(3).tags);

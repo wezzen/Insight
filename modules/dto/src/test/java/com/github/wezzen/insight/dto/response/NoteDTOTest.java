@@ -15,6 +15,7 @@ class NoteDTOTest {
         final Date createdAt = new Date();
         final Date remind = new Date();
         final NoteDTO dto = new NoteDTO(
+                "TestTitle",
                 "TestCategory",
                 "TestContent",
                 Set.of(
@@ -24,6 +25,7 @@ class NoteDTOTest {
                 createdAt.toString(),
                 remind.toString()
         );
+        Assertions.assertEquals("TestTitle", dto.title);
         Assertions.assertEquals("TestCategory", dto.category);
         Assertions.assertEquals("TestContent", dto.content);
         Assertions.assertEquals(Set.of("TestTag1", "TestTag2"), dto.tags);

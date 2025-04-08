@@ -20,6 +20,7 @@ class NoteTest {
         final long remindTime = now + 3600_000L;
         final Note note = new Note(
                 0L,
+                "TestTitle",
                 "Sample",
                 new Category("CategorySample"),
                 Date.from(Instant.ofEpochMilli(now)),
@@ -28,6 +29,7 @@ class NoteTest {
         );
         assertNotNull(note);
         assertEquals(0L, note.getId());
+        assertEquals("TestTitle", note.getTitle());
         assertEquals("Sample", note.getContent());
         assertEquals(new Category("CategorySample"), note.getCategory());
         assertEquals(Date.from(Instant.ofEpochMilli(now)), note.getCreatedAt());

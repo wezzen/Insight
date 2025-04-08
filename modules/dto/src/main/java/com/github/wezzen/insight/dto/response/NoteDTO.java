@@ -11,6 +11,8 @@ import java.util.Set;
 @EqualsAndHashCode
 public final class NoteDTO {
 
+    public final String title;
+
     public final String category;
 
     public final String content;
@@ -22,11 +24,13 @@ public final class NoteDTO {
     public final String remind;
 
     @JsonCreator
-    public NoteDTO(@JsonProperty("category") final String category,
+    public NoteDTO(@JsonProperty("title") final String title,
+                   @JsonProperty("category") final String category,
                    @JsonProperty("content") final String content,
                    @JsonProperty("tags") final Set<String> tags,
                    @JsonProperty("createdAt") final String createdAt,
                    @JsonProperty("remind") final String remind) {
+        this.title = title;
         this.category = category;
         this.content = content;
         this.tags = tags;

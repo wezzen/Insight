@@ -113,6 +113,7 @@ public class NoteService {
 
     protected NoteDTO convert(final Note note) {
         return new NoteDTO(
+                note.getTitle(),
                 note.getCategory().getName(),
                 note.getContent(),
                 note.getTags().stream().map(Tag::getTag).collect(Collectors.toSet()),
