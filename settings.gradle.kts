@@ -20,3 +20,6 @@ project(":security").projectDir = file("modules/security")
 
 include("dto")
 project(":dto").projectDir = file("modules/dto")
+
+include("utils")
+project(":utils").projectDir = file("modules/utils")
