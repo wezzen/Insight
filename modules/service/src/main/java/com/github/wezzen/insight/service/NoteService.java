@@ -9,6 +9,7 @@ import com.github.wezzen.insight.repository.NoteRepository;
 import com.github.wezzen.insight.repository.TagRepository;
 import com.github.wezzen.insight.service.exception.CategoryNotFoundException;
 import com.github.wezzen.insight.service.exception.NoteNotFoundException;
+import com.github.wezzen.insight.service.exception.TagNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,16 +42,17 @@ public class NoteService {
         if (categoryOptional.isEmpty()) {
             throw new CategoryNotFoundException("Category " + category.getName() + " not found");
         }
-        final Category synCategory = categoryOptional.get();
-        final Set<Tag> synTags = new HashSet<>();
+        final Category fetchedCategory = categoryOptional.get();
+
+        final Set<Tag> fetchedTags = new HashSet<>();
         for (final Tag tag : tags) {
-            final Tag synTag = tagRepository.findById(tag.getTag()).orElseGet(() -> tagRepository.save(tag));
-            synTags.add(synTag);
+            final Tag synTag = tagRepository.findById(tag.getTag()).orElseThrow(() -> new TagNotFoundException("Tag " + tag.getTag() + " not found"));
+            fetchedTags.add(synTag);
         }
         final Note note = new Note();
-        note.setCategory(synCategory);
+        note.setCategory(fetchedCategory);
         note.setContent(content);
-        note.setTags(synTags);
+        note.setTags(fetchedTags);
         note.setReminder(reminder);
         note.setCreatedAt(new Date());
         return convert(noteRepository.save(note));
@@ -87,13 +89,13 @@ public class NoteService {
         if (noteOptional.isEmpty()) {
             throw new NoteNotFoundException("Note not found with given category, content, and createdAt");
         }
-        final Set<Tag> synTags = new HashSet<>();
+        final Set<Tag> fetchedTags = new HashSet<>();
         for (final Tag tag : tags) {
-            final Tag synTag = tagRepository.findById(tag.getTag()).orElseGet(() -> tagRepository.save(tag));
-            synTags.add(synTag);
+            final Tag synTag = tagRepository.findById(tag.getTag()).orElseThrow(() -> new TagNotFoundException("Tag " + tag.getTag() + " not found"));
+            fetchedTags.add(synTag);
         }
         final Note note = noteOptional.get();
-        note.setTags(synTags);
+        note.setTags(fetchedTags);
         note.setContent(newContent);
         note.setReminder(reminder);
 
