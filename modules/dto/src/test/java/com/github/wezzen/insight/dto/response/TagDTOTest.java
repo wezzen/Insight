@@ -9,7 +9,7 @@ class TagDTOTest {
 
     @Test
     void creatingTest() {
-        final TagDTO dto = new TagDTO("TestTag");
+        final TagDTO dto = new TagDTO("TestTag", "RED");
         Assertions.assertEquals("TestTag", dto.tag);
     }
 

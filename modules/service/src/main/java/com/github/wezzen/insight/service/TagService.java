@@ -5,11 +5,13 @@ import com.github.wezzen.insight.model.Tag;
 import com.github.wezzen.insight.repository.TagRepository;
 import com.github.wezzen.insight.service.exception.DuplicateTagException;
 import com.github.wezzen.insight.service.exception.TagNotFoundException;
+import com.github.wezzen.insight.utils.ColorGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -17,9 +19,12 @@ public class TagService {
 
     private final TagRepository tagRepository;
 
+    private final ColorGenerator colorGenerator;
+
     @Autowired
-    public TagService(final TagRepository tagRepository) {
+    public TagService(final TagRepository tagRepository, final ColorGenerator colorGenerator) {
         this.tagRepository = tagRepository;
+        this.colorGenerator = colorGenerator;
     }
 
     @Transactional
@@ -27,7 +32,7 @@ public class TagService {
         if (tagRepository.findById(tag).isPresent()) {
             throw new DuplicateTagException("Tag " + tag + " already exists");
         }
-        return convert(tagRepository.save(new Tag(tag)));
+        return convert(tagRepository.save(new Tag(tag, colorGenerator.generateSoftColor())));
     }
 
     public List<TagDTO> getAllTags() {
@@ -43,6 +48,6 @@ public class TagService {
     }
 
     protected TagDTO convert(final Tag tag) {
-        return new TagDTO(tag.getTag());
+        return new TagDTO(tag.getTag(), tag.getColor());
     }
 }

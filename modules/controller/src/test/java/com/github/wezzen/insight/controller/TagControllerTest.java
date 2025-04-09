@@ -60,9 +60,9 @@ class TagControllerTest {
     @Test
     void getTagsTest() throws Exception {
         final List<TagDTO> tagsDTOS = List.of(
-                new TagDTO("TestTag1"),
-                new TagDTO("TestTag2"),
-                new TagDTO("TestTag3")
+                new TagDTO("TestTag1", "RED"),
+                new TagDTO("TestTag2", "BLACK"),
+                new TagDTO("TestTag3", "ORANGE")
         );
 
         Mockito.when(tagService.getAllTags()).thenReturn(tagsDTOS);
@@ -70,16 +70,16 @@ class TagControllerTest {
         mockMvc.perform(get("/tags"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(tagsDTOS.size()))
-                .andExpect(jsonPath("$[0].tag").value("TestTag1"))
-                .andExpect(jsonPath("$[1].tag").value("TestTag2"))
-                .andExpect(jsonPath("$[2].tag").value("TestTag3"));
+                .andExpect(jsonPath("$[0].tag").value(tagsDTOS.getFirst().tag))
+                .andExpect(jsonPath("$[1].tag").value(tagsDTOS.get(1).tag))
+                .andExpect(jsonPath("$[2].tag").value(tagsDTOS.get(2).tag));
 
         Mockito.verify(tagService, Mockito.times(1)).getAllTags();
     }
 
     @Test
     void createTagTest() throws Exception {
-        final TagDTO tagDTO = new TagDTO("TestTag1");
+        final TagDTO tagDTO = new TagDTO("TestTag1", "RED");
         Mockito.when(tagService.createTag(Mockito.anyString())).thenReturn(tagDTO);
         final CreateTagRequest request = new CreateTagRequest(tagDTO.tag);
 
@@ -93,7 +93,7 @@ class TagControllerTest {
 
     @Test
     void deleteTagTest() throws Exception {
-        final TagDTO tagDTO = new TagDTO("TestTag1");
+        final TagDTO tagDTO = new TagDTO("TestTag1", "RED");
         Mockito.when(tagService.createTag(Mockito.anyString())).thenReturn(tagDTO);
         final CreateTagRequest request = new CreateTagRequest(tagDTO.tag);
 

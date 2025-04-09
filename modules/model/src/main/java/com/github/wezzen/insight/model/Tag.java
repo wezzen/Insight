@@ -1,9 +1,6 @@
 package com.github.wezzen.insight.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Set;
@@ -21,6 +18,14 @@ public class Tag {
 
     @ManyToMany(mappedBy = "tags")
     private Set<Note> notes;
+
+    @Column(nullable = false)
+    private String color;
+
+    public Tag(final String tag, final String color) {
+        this.tag = tag;
+        this.color = color;
+    }
 
     public Tag(final String tag) {
         this.tag = tag;

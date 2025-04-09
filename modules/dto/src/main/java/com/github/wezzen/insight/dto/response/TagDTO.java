@@ -11,8 +11,12 @@ public final class TagDTO {
 
     public final String tag;
 
+    public final String color;
+
     @JsonCreator
-    public TagDTO(@JsonProperty("tag") final String tag) {
+    public TagDTO(@JsonProperty("tag") final String tag,
+                  @JsonProperty("color") final String color) {
         this.tag = tag;
+        this.color = color;
     }
 }
