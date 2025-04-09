@@ -5,7 +5,7 @@ import com.github.wezzen.insight.dto.response.TagResponse;
 import com.github.wezzen.insight.model.Tag;
 import com.github.wezzen.insight.repository.TagRepository;
 import com.github.wezzen.insight.service.exception.DuplicateTagException;
-import com.github.wezzen.insight.service.exception.TagHasNotesException;
+import com.github.wezzen.insight.service.exception.DeletingTagWithNotesException;
 import com.github.wezzen.insight.service.exception.TagNotFoundException;
 import com.github.wezzen.insight.utils.ColorGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class TagService {
     @Transactional
     public TagResponse createTag(final CreateTagRequest request) {
         if (tagRepository.findById(request.tag).isPresent()) {
-            throw new DuplicateTagException("Tag " + request.tag + " already exists");
+            throw new DuplicateTagException(String.format("Tag [%s] already exists", request.tag));
         }
         return convert(tagRepository.save(new Tag(request.tag, colorGenerator.generateSoftColor())));
     }
@@ -45,11 +45,11 @@ public class TagService {
     public void deleteTag(final String tag) {
         final Optional<Tag> optional = tagRepository.findById(tag);
         if (optional.isEmpty()) {
-            throw new TagNotFoundException("Tag " + optional + " not found");
+            throw new TagNotFoundException(String.format("Tag [%s] is not found", tag));
         }
         final Tag fetched = optional.get();
         if (fetched.getNotes() != null && !fetched.getNotes().isEmpty()) {
-            throw new TagHasNotesException("Tag " + fetched + " has " + fetched.getNotes().size() + " notes");
+            throw new DeletingTagWithNotesException(String.format("Tag [%s] has [%d] notes", fetched, fetched.getNotes().size()));
         }
         tagRepository.deleteById(tag);
     }

@@ -43,13 +43,13 @@ public class NoteService {
     public NoteResponse createNote(final CreateNoteRequest request) {
         final Optional<Category> categoryOptional = categoryRepository.findById(request.category);
         if (categoryOptional.isEmpty()) {
-            throw new CategoryNotFoundException("Category " + request.category + " not found");
+            throw new CategoryNotFoundException(String.format("Category [%s] not found", request.category));
         }
         final Category fetchedCategory = categoryOptional.get();
 
         final Set<Tag> fetchedTags = new HashSet<>();
         for (final String tag : request.tags) {
-            final Tag synTag = tagRepository.findById(tag).orElseThrow(() -> new TagNotFoundException("Tag " + tag + " not found"));
+            final Tag synTag = tagRepository.findById(tag).orElseThrow(() -> new TagNotFoundException(String.format("Tag [%s] not found", tag)));
             fetchedTags.add(synTag);
         }
         final Note note = new Note();
@@ -68,7 +68,7 @@ public class NoteService {
 
     public List<NoteResponse> findByCategory(final String categoryName) {
         final Category category = categoryRepository.findById(categoryName)
-                .orElseThrow(() -> new CategoryNotFoundException("Category " + categoryName + " not found"));
+                .orElseThrow(() -> new CategoryNotFoundException(String.format("Category [%s] not found", categoryName)));
         return noteRepository.findByCategory(category).stream().map(this::convert).toList();
     }
 
@@ -78,7 +78,7 @@ public class NoteService {
         }
         final Set<Tag> fetchedTags = new HashSet<>();
         for (final String tag : tagNames) {
-            final Tag synTag = tagRepository.findById(tag).orElseThrow(() -> new TagNotFoundException("Tag " + tag + " not found"));
+            final Tag synTag = tagRepository.findById(tag).orElseThrow(() -> new TagNotFoundException(String.format("Tag [%s] not found", tag)));
             fetchedTags.add(synTag);
         }
         return noteRepository.findByTagsContainingAll(fetchedTags, fetchedTags.size()).stream().map(this::convert).toList();
@@ -88,7 +88,7 @@ public class NoteService {
     public NoteResponse updateNote(final UpdateNoteRequest request) {
         final Optional<Category> categoryOptional = categoryRepository.findById(request.category);
         if (categoryOptional.isEmpty()) {
-            throw new CategoryNotFoundException("Category " + request.category + " not found");
+            throw new CategoryNotFoundException(String.format("Category [%s] not found", request.category));
         }
         final Category fetchedCategory = categoryOptional.get();
         final Optional<Note> noteOptional = noteRepository.findAllByTitleAndCategoryAndContent(request.title, fetchedCategory, request.content);
@@ -98,7 +98,7 @@ public class NoteService {
         }
         final Set<Tag> fetchedTags = new HashSet<>();
         for (final String tag : request.tags) {
-            final Tag synTag = tagRepository.findById(tag).orElseThrow(() -> new TagNotFoundException("Tag " + tag + " not found"));
+            final Tag synTag = tagRepository.findById(tag).orElseThrow(() -> new TagNotFoundException(String.format("Tag [%s] not found", tag)));
             fetchedTags.add(synTag);
         }
         final Note note = noteOptional.get();
@@ -112,7 +112,7 @@ public class NoteService {
     public void deleteNote(final DeleteNoteRequest request) {
         final Optional<Category> categoryOptional = categoryRepository.findById(request.category);
         if (categoryOptional.isEmpty()) {
-            throw new CategoryNotFoundException("Category " + request.category + " not found");
+            throw new CategoryNotFoundException(String.format("Category [%s] not found", request.category));
         }
         final Category category = categoryOptional.get();
         final Optional<Note> note = noteRepository.findAllByTitleAndCategoryAndContent(request.title, category, request.content);

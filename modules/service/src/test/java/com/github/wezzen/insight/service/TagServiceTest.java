@@ -6,7 +6,7 @@ import com.github.wezzen.insight.model.Note;
 import com.github.wezzen.insight.model.Tag;
 import com.github.wezzen.insight.repository.TagRepository;
 import com.github.wezzen.insight.service.exception.DuplicateTagException;
-import com.github.wezzen.insight.service.exception.TagHasNotesException;
+import com.github.wezzen.insight.service.exception.DeletingTagWithNotesException;
 import com.github.wezzen.insight.service.exception.TagNotFoundException;
 import com.github.wezzen.insight.utils.ColorGenerator;
 import org.junit.jupiter.api.Test;
@@ -92,7 +92,7 @@ class TagServiceTest {
         final Note mockNote = Mockito.mock(Note.class);
         tag.setNotes(Set.of(mockNote));
         Mockito.when(tagRepository.findById(tag.getTag())).thenReturn(Optional.of(tag));
-        assertThrows(TagHasNotesException.class, () -> tagService.deleteTag(tag.getTag()));
+        assertThrows(DeletingTagWithNotesException.class, () -> tagService.deleteTag(tag.getTag()));
         Mockito.verify(tagRepository, Mockito.times(0)).deleteById(tag.getTag());
     }
 

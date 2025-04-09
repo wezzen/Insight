@@ -30,7 +30,7 @@ public class CategoryService {
     @Transactional
     public CategoryResponse createCategory(final CreateCategoryRequest request) {
         if (categoryRepository.findById(request.name).isPresent()) {
-            throw new DuplicateCategoryException("Category with name " + request + " already exists");
+            throw new DuplicateCategoryException(String.format("Category with name [%s] already exists", request.name));
         }
         return convert(categoryRepository.save(new Category(request.name)));
     }
@@ -43,11 +43,11 @@ public class CategoryService {
     public void deleteCategory(final String name) {
         final Optional<Category> categoryOptional = categoryRepository.findById(name);
         if (categoryOptional.isEmpty()) {
-            throw new CategoryNotFoundException("Category with name " + name + " does not exist");
+            throw new CategoryNotFoundException(String.format("Category with name [%s] does not exist", name));
         }
         final Set<Note> notes = categoryOptional.get().getNotes();
         if (notes != null && !notes.isEmpty()) {
-            throw new DeleteNotEmptyCategoryException("Category with name " + name + " has " + notes.size() + " notes ");
+            throw new DeleteNotEmptyCategoryException(String.format("Category with name[%s] has [%d] notes", name, notes.size()));
         }
         categoryRepository.deleteById(name);
     }
