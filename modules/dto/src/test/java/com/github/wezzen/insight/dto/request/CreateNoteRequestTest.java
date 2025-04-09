@@ -12,6 +12,7 @@ class CreateNoteRequestTest {
     @Test
     void creatingTest() {
         final CreateNoteRequest request = new CreateNoteRequest(
+                "TestTitle",
                 "TestCategory",
                 "TestContent",
                 Set.of(
@@ -20,6 +21,7 @@ class CreateNoteRequestTest {
                 ),
                 12345L
         );
+        Assertions.assertEquals("TestTitle", request.title);
         Assertions.assertEquals("TestCategory", request.category);
         Assertions.assertEquals("TestContent", request.content);
         Assertions.assertEquals(Set.of("TestTag1", "TestTag2"), request.tags);

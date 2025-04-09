@@ -1,6 +1,9 @@
 package com.github.wezzen.insight.service;
 
-import com.github.wezzen.insight.dto.response.NoteDTO;
+import com.github.wezzen.insight.dto.request.CreateNoteRequest;
+import com.github.wezzen.insight.dto.request.DeleteNoteRequest;
+import com.github.wezzen.insight.dto.request.UpdateNoteRequest;
+import com.github.wezzen.insight.dto.response.NoteResponse;
 import com.github.wezzen.insight.model.Category;
 import com.github.wezzen.insight.model.Note;
 import com.github.wezzen.insight.model.Tag;
@@ -37,84 +40,91 @@ public class NoteService {
     }
 
     @Transactional
-    public NoteDTO createNote(final Category category, final String content, final Set<Tag> tags, final Date reminder) {
-        final Optional<Category> categoryOptional = categoryRepository.findById(category.getName());
+    public NoteResponse createNote(final CreateNoteRequest request) {
+        final Optional<Category> categoryOptional = categoryRepository.findById(request.category);
         if (categoryOptional.isEmpty()) {
-            throw new CategoryNotFoundException("Category " + category.getName() + " not found");
+            throw new CategoryNotFoundException("Category " + request.category + " not found");
         }
         final Category fetchedCategory = categoryOptional.get();
 
         final Set<Tag> fetchedTags = new HashSet<>();
-        for (final Tag tag : tags) {
-            final Tag synTag = tagRepository.findById(tag.getTag()).orElseThrow(() -> new TagNotFoundException("Tag " + tag.getTag() + " not found"));
+        for (final String tag : request.tags) {
+            final Tag synTag = tagRepository.findById(tag).orElseThrow(() -> new TagNotFoundException("Tag " + tag + " not found"));
             fetchedTags.add(synTag);
         }
         final Note note = new Note();
+        note.setTitle(request.title);
         note.setCategory(fetchedCategory);
-        note.setContent(content);
+        note.setContent(request.content);
         note.setTags(fetchedTags);
-        note.setReminder(reminder);
+        note.setReminder(new Date(request.reminder));
         note.setCreatedAt(new Date());
         return convert(noteRepository.save(note));
     }
 
-    public List<NoteDTO> getAllNotes() {
+    public List<NoteResponse> getAllNotes() {
         return StreamSupport.stream(noteRepository.findAll().spliterator(), false).map(this::convert).toList();
     }
 
-    public List<NoteDTO> findByCategory(final Category category) {
-        return noteRepository.getAllByCategory(category).stream().map(this::convert).toList();
+    public List<NoteResponse> findByCategory(final String categoryName) {
+        final Category category = categoryRepository.findById(categoryName)
+                .orElseThrow(() -> new CategoryNotFoundException("Category " + categoryName + " not found"));
+        return noteRepository.findByCategory(category).stream().map(this::convert).toList();
     }
 
-    public List<NoteDTO> findByAllTags(final Set<Tag> tags) {
-        if (tags.isEmpty()) {
+    public List<NoteResponse> findByAllTags(final Set<String> tagNames) {
+        if (tagNames.isEmpty()) {
             return Collections.emptyList();
         }
-        return noteRepository.findAllByTags(tags, tags.size()).stream().map(this::convert).toList();
-    }
-
-    public List<NoteDTO> findByAnyTag(final Set<Tag> tags) {
-        if (tags.isEmpty()) {
-            return Collections.emptyList();
+        final Set<Tag> fetchedTags = new HashSet<>();
+        for (final String tag : tagNames) {
+            final Tag synTag = tagRepository.findById(tag).orElseThrow(() -> new TagNotFoundException("Tag " + tag + " not found"));
+            fetchedTags.add(synTag);
         }
-        return noteRepository.getAllByTagsIn(tags).stream()
-                .map(this::convert)
-                .toList();
+        return noteRepository.findByTagsContainingAll(fetchedTags, fetchedTags.size()).stream().map(this::convert).toList();
     }
 
     @Transactional
-    public NoteDTO updateNote(final Category category, final String content, final String newContent,
-                              final Set<Tag> tags, final Date createdAt, final Date reminder) {
-        final Optional<Note> noteOptional = noteRepository.findByCategoryAndContentAndCreatedAt(category, content, createdAt);
+    public NoteResponse updateNote(final UpdateNoteRequest request) {
+        final Optional<Category> categoryOptional = categoryRepository.findById(request.category);
+        if (categoryOptional.isEmpty()) {
+            throw new CategoryNotFoundException("Category " + request.category + " not found");
+        }
+        final Category fetchedCategory = categoryOptional.get();
+        final Optional<Note> noteOptional = noteRepository.findAllByTitleAndCategoryAndContent(request.title, fetchedCategory, request.content);
         if (noteOptional.isEmpty()) {
-            throw new NoteNotFoundException("Note not found with given category, content, and createdAt");
+            throw new NoteNotFoundException(String.format("Note not found with given title [%s], category [%s] and content [%s]",
+                    request.title, request.category, request.content));
         }
         final Set<Tag> fetchedTags = new HashSet<>();
-        for (final Tag tag : tags) {
-            final Tag synTag = tagRepository.findById(tag.getTag()).orElseThrow(() -> new TagNotFoundException("Tag " + tag.getTag() + " not found"));
+        for (final String tag : request.tags) {
+            final Tag synTag = tagRepository.findById(tag).orElseThrow(() -> new TagNotFoundException("Tag " + tag + " not found"));
             fetchedTags.add(synTag);
         }
         final Note note = noteOptional.get();
         note.setTags(fetchedTags);
-        note.setContent(newContent);
-        note.setReminder(reminder);
-
+        note.setContent(request.newContent);
+        note.setReminder(new Date(request.reminder));
         return convert(noteRepository.save(note));
     }
 
     @Transactional
-    public void deleteNote(final Category category, final String content, final Date createdAt) {
-        final Optional<Note> note = noteRepository
-                .findByCategoryAndContentAndCreatedAt(category, content, createdAt);
+    public void deleteNote(final DeleteNoteRequest request) {
+        final Optional<Category> categoryOptional = categoryRepository.findById(request.category);
+        if (categoryOptional.isEmpty()) {
+            throw new CategoryNotFoundException("Category " + request.category + " not found");
+        }
+        final Category category = categoryOptional.get();
+        final Optional<Note> note = noteRepository.findAllByTitleAndCategoryAndContent(request.title, category, request.content);
         if (note.isEmpty()) {
-            throw new NoteNotFoundException(String.format("Note not found with given category [%s], content [%s], and createdAt [%s]",
-                    category.getName(), content, createdAt));
+            throw new NoteNotFoundException(String.format("Note not found with given title [%s], category [%s], and content [%s]",
+                    request.title, request.category, request.content));
         }
         noteRepository.deleteById(note.get().getId());
     }
 
-    protected NoteDTO convert(final Note note) {
-        return new NoteDTO(
+    protected NoteResponse convert(final Note note) {
+        return new NoteResponse(
                 note.getTitle(),
                 note.getCategory().getName(),
                 note.getContent(),

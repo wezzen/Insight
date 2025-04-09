@@ -7,16 +7,12 @@ import org.springframework.data.annotation.Immutable;
 
 @Immutable
 @EqualsAndHashCode
-public final class TagDTO {
+public final class CategoryResponse {
 
-    public final String tag;
-
-    public final String color;
+    public final String name;
 
     @JsonCreator
-    public TagDTO(@JsonProperty("tag") final String tag,
-                  @JsonProperty("color") final String color) {
-        this.tag = tag;
-        this.color = color;
+    public CategoryResponse(@JsonProperty("name") final String name) {
+        this.name = name;
     }
 }

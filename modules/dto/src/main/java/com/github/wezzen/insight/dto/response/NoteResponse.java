@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Immutable
 @EqualsAndHashCode
-public final class NoteDTO {
+public final class NoteResponse {
 
     public final String title;
 
@@ -24,12 +24,12 @@ public final class NoteDTO {
     public final String remind;
 
     @JsonCreator
-    public NoteDTO(@JsonProperty("title") final String title,
-                   @JsonProperty("category") final String category,
-                   @JsonProperty("content") final String content,
-                   @JsonProperty("tags") final Set<String> tags,
-                   @JsonProperty("createdAt") final String createdAt,
-                   @JsonProperty("remind") final String remind) {
+    public NoteResponse(@JsonProperty("title") final String title,
+                        @JsonProperty("category") final String category,
+                        @JsonProperty("content") final String content,
+                        @JsonProperty("tags") final Set<String> tags,
+                        @JsonProperty("createdAt") final String createdAt,
+                        @JsonProperty("remind") final String remind) {
         this.title = title;
         this.category = category;
         this.content = content;

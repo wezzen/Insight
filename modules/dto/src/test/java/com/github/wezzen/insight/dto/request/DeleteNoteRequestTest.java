@@ -10,13 +10,13 @@ class DeleteNoteRequestTest {
     @Test
     void creatingTest() {
         final DeleteNoteRequest request = new DeleteNoteRequest(
+                "TestTitle",
                 "TestCategory",
-                "TestContent",
-                12345L
+                "TestContent"
         );
+        Assertions.assertEquals("TestTitle", request.title);
         Assertions.assertEquals("TestCategory", request.category);
         Assertions.assertEquals("TestContent", request.content);
-        Assertions.assertEquals(12345L, request.createdAt);
     }
 
     @Test

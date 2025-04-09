@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.Set;
 
-class NoteDTOTest {
+class NoteResponseTest {
 
     @Test
     void creatingTest() {
         final Date createdAt = new Date();
         final Date remind = new Date();
-        final NoteDTO dto = new NoteDTO(
+        final NoteResponse dto = new NoteResponse(
                 "TestTitle",
                 "TestCategory",
                 "TestContent",
@@ -35,7 +35,7 @@ class NoteDTOTest {
 
     @Test
     void equalsAndHashCodeTest() {
-        EqualsVerifier.forClass(NoteDTO.class)
+        EqualsVerifier.forClass(NoteResponse.class)
                 .withIgnoredAnnotations(Nonnull.class)
                 .verify();
     }

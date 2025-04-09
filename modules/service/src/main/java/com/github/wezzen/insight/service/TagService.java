@@ -1,6 +1,7 @@
 package com.github.wezzen.insight.service;
 
-import com.github.wezzen.insight.dto.response.TagDTO;
+import com.github.wezzen.insight.dto.request.CreateTagRequest;
+import com.github.wezzen.insight.dto.response.TagResponse;
 import com.github.wezzen.insight.model.Tag;
 import com.github.wezzen.insight.repository.TagRepository;
 import com.github.wezzen.insight.service.exception.DuplicateTagException;
@@ -29,14 +30,14 @@ public class TagService {
     }
 
     @Transactional
-    public TagDTO createTag(final String tag) {
-        if (tagRepository.findById(tag).isPresent()) {
-            throw new DuplicateTagException("Tag " + tag + " already exists");
+    public TagResponse createTag(final CreateTagRequest request) {
+        if (tagRepository.findById(request.tag).isPresent()) {
+            throw new DuplicateTagException("Tag " + request.tag + " already exists");
         }
-        return convert(tagRepository.save(new Tag(tag, colorGenerator.generateSoftColor())));
+        return convert(tagRepository.save(new Tag(request.tag, colorGenerator.generateSoftColor())));
     }
 
-    public List<TagDTO> getAllTags() {
+    public List<TagResponse> getAllTags() {
         return StreamSupport.stream(tagRepository.findAll().spliterator(), false).map(this::convert).toList();
     }
 
@@ -53,7 +54,7 @@ public class TagService {
         tagRepository.deleteById(tag);
     }
 
-    protected TagDTO convert(final Tag tag) {
-        return new TagDTO(tag.getTag(), tag.getColor());
+    protected TagResponse convert(final Tag tag) {
+        return new TagResponse(tag.getTag(), tag.getColor());
     }
 }

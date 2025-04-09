@@ -12,20 +12,20 @@ class UpdateNoteRequestTest {
     @Test
     void creatingTest() {
         final UpdateNoteRequest request = new UpdateNoteRequest(
+                "TestTitle",
                 "TestCategory",
                 "TestContent",
                 "TestNewContent",
-                12345L,
                 Set.of(
                         "TestTag1",
                         "TestTag2"
                 ),
                 54321L
         );
+        Assertions.assertEquals("TestTitle", request.title);
         Assertions.assertEquals("TestCategory", request.category);
         Assertions.assertEquals("TestContent", request.content);
         Assertions.assertEquals("TestNewContent", request.newContent);
-        Assertions.assertEquals(12345L, request.createdAt);
         Assertions.assertEquals(Set.of("TestTag1", "TestTag2"), request.tags);
         Assertions.assertEquals(54321L, request.reminder);
     }

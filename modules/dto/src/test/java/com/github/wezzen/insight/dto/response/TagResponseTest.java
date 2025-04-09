@@ -5,19 +5,18 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class CategoryDTOTest {
+class TagResponseTest {
 
     @Test
     void creatingTest() {
-        final CategoryDTO dto = new CategoryDTO("TestName");
-        Assertions.assertEquals("TestName", dto.name);
+        final TagResponse dto = new TagResponse("TestTag", "RED");
+        Assertions.assertEquals("TestTag", dto.tag);
     }
 
     @Test
     void equalsAndHashCodeTest() {
-        EqualsVerifier.forClass(CategoryDTO.class)
+        EqualsVerifier.forClass(TagResponse.class)
                 .withIgnoredAnnotations(Nonnull.class)
                 .verify();
     }
-
 }

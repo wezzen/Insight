@@ -2,7 +2,7 @@ package com.github.wezzen.insight.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wezzen.insight.dto.request.CreateCategoryRequest;
-import com.github.wezzen.insight.dto.response.CategoryDTO;
+import com.github.wezzen.insight.dto.response.CategoryResponse;
 import com.github.wezzen.insight.service.CategoryService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +59,7 @@ class CategoryControllerTest {
 
     @Test
     void createCategoryTest() throws Exception {
-        final CategoryDTO category = new CategoryDTO("Test Category");
+        final CategoryResponse category = new CategoryResponse("Test Category");
         Mockito.when(categoryService.createCategory(Mockito.any())).thenReturn(category);
         final CreateCategoryRequest request = new CreateCategoryRequest("Test Category");
 
@@ -68,22 +68,22 @@ class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(category.name));
 
-        Mockito.verify(categoryService, Mockito.times(1)).createCategory(category.name);
+        Mockito.verify(categoryService, Mockito.times(1)).createCategory(request);
     }
 
     @Test
     void getCategoriesTest() throws Exception {
-        final List<CategoryDTO> categoryDTOS = List.of(
-                new CategoryDTO("Test Category 1"),
-                new CategoryDTO("Test Category 2"),
-                new CategoryDTO("Test Category 3")
+        final List<CategoryResponse> categoryResponses = List.of(
+                new CategoryResponse("Test Category 1"),
+                new CategoryResponse("Test Category 2"),
+                new CategoryResponse("Test Category 3")
         );
 
-        Mockito.when(categoryService.getAllCategories()).thenReturn(categoryDTOS);
+        Mockito.when(categoryService.getAllCategories()).thenReturn(categoryResponses);
 
         mockMvc.perform(get("/categories"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(categoryDTOS.size()))
+                .andExpect(jsonPath("$.length()").value(categoryResponses.size()))
                 .andExpect(jsonPath("$[0].name").value("Test Category 1"))
                 .andExpect(jsonPath("$[1].name").value("Test Category 2"))
                 .andExpect(jsonPath("$[2].name").value("Test Category 3"));
@@ -93,7 +93,7 @@ class CategoryControllerTest {
 
     @Test
     void deleteCategoryTest() throws Exception {
-        final CategoryDTO category = new CategoryDTO("Test Category");
+        final CategoryResponse category = new CategoryResponse("Test Category");
         Mockito.when(categoryService.createCategory(Mockito.any())).thenReturn(category);
         final CreateCategoryRequest request = new CreateCategoryRequest("Test Category");
 
@@ -102,7 +102,7 @@ class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(category.name));
 
-        Mockito.verify(categoryService, Mockito.times(1)).createCategory(category.name);
+        Mockito.verify(categoryService, Mockito.times(1)).createCategory(request);
 
         mockMvc.perform(delete("/categories/{category}", category.name))
                 .andExpect(status().isNoContent());

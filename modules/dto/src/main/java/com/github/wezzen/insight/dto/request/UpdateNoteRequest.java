@@ -11,24 +11,24 @@ import java.util.Set;
 @EqualsAndHashCode
 public final class UpdateNoteRequest {
 
+    public final String title;
     public final String category;
     public final String content;
     public final String newContent;
-    public final long createdAt;
     public final Set<String> tags;
     public final long reminder;
 
     @JsonCreator
-    public UpdateNoteRequest(@JsonProperty("category") final String category,
+    public UpdateNoteRequest(@JsonProperty("title") final String title,
+                             @JsonProperty("category") final String category,
                              @JsonProperty("content") final String content,
                              @JsonProperty("newContent") final String newContent,
-                             @JsonProperty("createdAt") final long createdAt,
                              @JsonProperty("tags") final Set<String> tags,
                              @JsonProperty("reminder") final long reminder) {
+        this.title = title;
         this.category = category;
         this.content = content;
         this.newContent = newContent;
-        this.createdAt = createdAt;
         this.tags = tags;
         this.reminder = reminder;
     }

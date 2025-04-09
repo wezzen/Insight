@@ -1,6 +1,9 @@
 package com.github.wezzen.insight.service;
 
-import com.github.wezzen.insight.dto.response.NoteDTO;
+import com.github.wezzen.insight.dto.request.CreateNoteRequest;
+import com.github.wezzen.insight.dto.request.DeleteNoteRequest;
+import com.github.wezzen.insight.dto.request.UpdateNoteRequest;
+import com.github.wezzen.insight.dto.response.NoteResponse;
 import com.github.wezzen.insight.model.Category;
 import com.github.wezzen.insight.model.Note;
 import com.github.wezzen.insight.model.Tag;
@@ -37,7 +40,7 @@ class NoteServiceTest {
         final Date now = new Date();
         final Note note = new Note(0, "TestTitle", "Test Content", new Category("TestCategory"), now,
                 Set.of(new Tag("TestTag1"), new Tag("TestTag2")), now);
-        final NoteDTO dto = noteService.convert(note);
+        final NoteResponse dto = noteService.convert(note);
         assertEquals(note.getTitle(), dto.title);
         assertEquals(note.getCategory().getName(), dto.category);
         assertEquals(note.getContent(), dto.content);
@@ -48,16 +51,17 @@ class NoteServiceTest {
 
     @Test
     void createNoteSuccessTest() {
-        final Category category = new Category("Test Category");
-        final Tag tag = new Tag("Test Tag");
         final Date now = new Date();
-        final Note note = new Note(0, "TestTitle", "Test Content", category, now, Set.of(tag), now);
+        final CreateNoteRequest request = new CreateNoteRequest("TestTitle", "TestCategory", "TestContent", Set.of("TestTag"), now.getTime());
+        final Category category = new Category(request.category);
+        final Tag tag = new Tag("TestTag");
+        final Note note = new Note(0, request.title, request.content, category, now, Set.of(tag), now);
         Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.of(category));
         Mockito.when(tagRepository.findById(tag.getTag())).thenReturn(Optional.of(tag));
 
         Mockito.when(noteRepository.findById(note.getId())).thenReturn(Optional.empty());
         Mockito.when(noteRepository.save(Mockito.any(Note.class))).thenReturn(note);
-        final NoteDTO createdNote = noteService.createNote(note.getCategory(), note.getContent(), note.getTags(), note.getReminder());
+        final NoteResponse createdNote = noteService.createNote(request);
 
         assertNotNull(createdNote);
         assertEquals(note.getTitle(), createdNote.title);
@@ -70,33 +74,31 @@ class NoteServiceTest {
 
     @Test
     void createNoteNotExistTagFailedTest() {
-        final Category category = new Category("Test Category");
-        final Tag tag = new Tag("Test Tag");
         final Date now = new Date();
-        final Note note = new Note(0, "TestTitle", "Test Content", category, now, Set.of(tag), now);
+        final CreateNoteRequest request = new CreateNoteRequest("TestTitle", "TestCategory", "TestContent", Set.of("TestTag"), now.getTime());
+        final Category category = new Category(request.category);
+        final Tag tag = new Tag("TestTag");
+        final Note note = new Note(0, request.title, request.content, category, now, Set.of(tag), now);
         Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.of(category));
         Mockito.when(tagRepository.findById(tag.getTag())).thenReturn(Optional.empty());
         Mockito.when(tagRepository.save(Mockito.any())).thenReturn(tag);
-
         Mockito.when(noteRepository.findById(note.getId())).thenReturn(Optional.empty());
         Mockito.when(noteRepository.save(Mockito.any(Note.class))).thenReturn(note);
-        assertThrows(TagNotFoundException.class, () -> noteService.createNote(note.getCategory(), note.getContent(), note.getTags(), note.getReminder()));
+        assertThrows(TagNotFoundException.class, () -> noteService.createNote(request));
     }
 
     @Test
     void createNoteNotExistCategoryFailedTest() {
-        final Category category = new Category("Test Category");
-        final Tag tag = new Tag("Test Tag");
         final Date now = new Date();
-        final Note note = new Note(0, "TestTitle", "Test Content", category, now, Set.of(tag), now);
+        final CreateNoteRequest request = new CreateNoteRequest("TestTitle", "TestCategory", "TestContent", Set.of("TestTag"), now.getTime());
+        final Category category = new Category(request.category);
+        final Tag tag = new Tag("TestTag");
+        final Note note = new Note(0, request.title, request.content, category, now, Set.of(tag), now);
         Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.empty());
         Mockito.when(tagRepository.findById(tag.getTag())).thenReturn(Optional.of(tag));
-
         Mockito.when(noteRepository.findById(note.getId())).thenReturn(Optional.empty());
         Mockito.when(noteRepository.save(Mockito.any(Note.class))).thenReturn(note);
-        assertThrows(CategoryNotFoundException.class,
-                () -> noteService.createNote(note.getCategory(), note.getContent(), note.getTags(), note.getReminder()));
-
+        assertThrows(CategoryNotFoundException.class, () -> noteService.createNote(request));
         Mockito.verify(noteRepository, Mockito.times(0)).save(Mockito.any(Note.class));
         Mockito.verify(categoryRepository, Mockito.times(0)).save(Mockito.any(Category.class));
         Mockito.verify(tagRepository, Mockito.times(0)).save(Mockito.any(Tag.class));
@@ -137,7 +139,7 @@ class NoteServiceTest {
                 )
         );
         Mockito.when(noteRepository.findAll()).thenReturn(notes);
-        final List<NoteDTO> fetchedNotes = noteService.getAllNotes();
+        final List<NoteResponse> fetchedNotes = noteService.getAllNotes();
         assertNotNull(fetchedNotes);
         assertEquals(notes.size(), fetchedNotes.size());
         assertEquals(notes.getFirst().getTitle(), fetchedNotes.getFirst().title);
@@ -177,8 +179,9 @@ class NoteServiceTest {
                 new Note(1L, "TestTitle2", "TestContent2", target, createdAt, Set.of(tag1), remind),
                 new Note(2L, "TestTitle3", "TestContent3", target, createdAt, Set.of(tag1, tag3), remind)
         );
-        Mockito.when(noteRepository.getAllByCategory(target)).thenReturn(noteDTOS);
-        final List<NoteDTO> fetchedNotes = noteService.findByCategory(target);
+        Mockito.when(categoryRepository.findById(target.getName())).thenReturn(Optional.of(target));
+        Mockito.when(noteRepository.findByCategory(target)).thenReturn(noteDTOS);
+        final List<NoteResponse> fetchedNotes = noteService.findByCategory(target.getName());
         assertNotNull(fetchedNotes);
         assertEquals(noteDTOS.size(), fetchedNotes.size());
         assertEquals(noteDTOS.getFirst().getTitle(), fetchedNotes.getFirst().title);
@@ -202,29 +205,30 @@ class NoteServiceTest {
         assertEquals(noteDTOS.get(2).getTags().stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNotes.get(2).tags);
         assertEquals(noteDTOS.get(2).getReminder().toString(), fetchedNotes.get(2).remind);
 
-        Mockito.verify(noteRepository, Mockito.times(1)).getAllByCategory(target);
+        Mockito.verify(noteRepository, Mockito.times(1)).findByCategory(target);
     }
 
     @Test
     void updateNoteSuccessTest() {
+        final String title = "TestTitle";
         final String oldContent = "Test Old Content";
         final String newContent = "Test New Content";
-        final Category category = new Category("Test Category");
-        final Set<Tag> tags = Set.of(new Tag("Test Tag1"), new Tag("Test Tag2"));
-        final Date createdAt = new Date();
         final Date reminder = new Date();
-        final Note note = new Note(0, "Title", oldContent, category, createdAt, tags, reminder);
+        final UpdateNoteRequest request = new UpdateNoteRequest(title, "TestCategory", oldContent, newContent, Set.of("TestTag1", "TestTag2"), reminder.getTime());
+        final Category category = new Category(request.category);
+        final Set<Tag> tags = Set.of(new Tag("TestTag1"), new Tag("TestTag2"));
+        final Date createdAt = new Date();
+        final Note note = new Note(0, title, oldContent, category, createdAt, tags, reminder);
 
-        Mockito.when(noteRepository
-                        .findByCategoryAndContentAndCreatedAt(Mockito.eq(category), Mockito.eq(oldContent), Mockito.eq(createdAt)))
+        Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.of(category));
+        Mockito.when(noteRepository.findAllByTitleAndCategoryAndContent(Mockito.eq(title), Mockito.eq(category), Mockito.eq(oldContent)))
                 .thenReturn(Optional.of(note));
-
         Mockito.when(tagRepository.findById(Mockito.anyString()))
                 .thenAnswer(invocation -> Optional.of(new Tag(invocation.getArgument(0))));
         Mockito.when(noteRepository.save(Mockito.any(Note.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        final NoteDTO updatedNote = noteService.updateNote(category, oldContent, newContent, tags, createdAt, reminder);
+        final NoteResponse updatedNote = noteService.updateNote(request);
         assertNotNull(updatedNote);
         assertEquals(newContent, updatedNote.content);
         assertEquals(tags.size(), updatedNote.tags.size());
@@ -234,129 +238,129 @@ class NoteServiceTest {
 
     @Test
     void updateNoteFailedTest() {
+        final String title = "TestTitle";
         final String content = "Test Old Content";
-        final Category category = new Category("Test Category");
-        final Date createdAt = new Date();
-
-        Mockito.when(noteRepository.findByCategoryAndContentAndCreatedAt(Mockito.eq(category), Mockito.eq(content), Mockito.eq(createdAt)))
+        final Date reminder = new Date();
+        final UpdateNoteRequest request = new UpdateNoteRequest(title, "TestCategory", content, "NewContent", Set.of("TestTag1"), reminder.getTime());
+        final Category category = new Category(request.category);
+        Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.of(category));
+        Mockito.when(noteRepository.findAllByTitleAndCategoryAndContent(Mockito.eq(title), Mockito.eq(category), Mockito.eq(content)))
                 .thenReturn(Optional.empty());
-
-        Assertions.assertThrows(NoteNotFoundException.class,
-                () -> noteService.updateNote(category, content, Mockito.anyString(), Mockito.anySet(), createdAt, Mockito.any()));
+        Assertions.assertThrows(NoteNotFoundException.class, () -> noteService.updateNote(request));
         Mockito.verify(noteRepository, Mockito.times(0)).save(Mockito.any(Note.class));
     }
 
     @Test
     void updateNoteTagNotFoundFailedTest() {
+        final String title = "TestTitle";
         final String oldContent = "Test Old Content";
         final String newContent = "Test New Content";
-        final Category category = new Category("Test Category");
+        final Date reminder = new Date();
+        final UpdateNoteRequest request = new UpdateNoteRequest(title, "TestCategory", oldContent, newContent, Set.of("TestTag1", "TestTag2"), reminder.getTime());
+        final Category category = new Category(request.category);
         final Tag tag1 = new Tag("Test Tag1", "RED");
         final Tag tag2 = new Tag("Test Tag2", "BLACK");
         final Tag tag3 = new Tag("Test Tag3", "YELLOW");
         final Set<Tag> oldTags = Set.of(tag1, tag2);
-        final Set<Tag> newTags = Set.of(tag1, tag2, tag3);
         final Date createdAt = new Date();
-        final Date reminder = new Date();
-        final Note note = new Note(0, "Title", oldContent, category, createdAt, oldTags, reminder);
-
-        Mockito.when(noteRepository
-                        .findByCategoryAndContentAndCreatedAt(Mockito.eq(category), Mockito.eq(oldContent), Mockito.eq(createdAt)))
+        final Note note = new Note(0, "TestTitle", oldContent, category, createdAt, oldTags, reminder);
+        Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.of(category));
+        Mockito.when(noteRepository.findAllByTitleAndCategoryAndContent(Mockito.eq(title), Mockito.eq(category), Mockito.eq(oldContent)))
                 .thenReturn(Optional.of(note));
-
         Mockito.when(tagRepository.findById(tag1.getTag())).thenReturn(Optional.of(tag1));
         Mockito.when(tagRepository.findById(tag2.getTag())).thenReturn(Optional.of(tag2));
         Mockito.when(tagRepository.findById(tag3.getTag())).thenReturn(Optional.empty());
         Mockito.when(noteRepository.save(Mockito.any(Note.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        assertThrows(TagNotFoundException.class, () -> noteService.updateNote(category, oldContent, newContent, newTags, createdAt, reminder));
+        assertThrows(TagNotFoundException.class, () -> noteService.updateNote(request));
+    }
+
+    @Test
+    void updateNoteCategoryNotFoundFailedTest() {
+        final String title = "TestTitle";
+        final String oldContent = "Test Old Content";
+        final String newContent = "Test New Content";
+        final Date reminder = new Date();
+        final UpdateNoteRequest request = new UpdateNoteRequest(title, "TestCategory", oldContent, newContent, Set.of("TestTag1", "TestTag2"), reminder.getTime());
+        final Category category = new Category(request.category);
+        Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.empty());
+        assertThrows(CategoryNotFoundException.class, () -> noteService.updateNote(request));
+        Mockito.verify(noteRepository, Mockito.times(0)).save(Mockito.any(Note.class));
     }
 
     @Test
     void deleteNoteSuccessTest() {
         final Note mockNote = Mockito.mock(Note.class);
         Mockito.when(mockNote.getId()).thenReturn(0L);
-        Mockito.when(noteRepository.findByCategoryAndContentAndCreatedAt(Mockito.any(), Mockito.any(), Mockito.any()))
+        Mockito.when(noteRepository.findAllByTitleAndCategoryAndContent(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(Optional.of(mockNote));
-        noteService.deleteNote(Mockito.any(), Mockito.anyString(), Mockito.any());
+        final DeleteNoteRequest request = new DeleteNoteRequest("TestTitle", "TestCategory", "TestContent");
+        final Category mockCategory = Mockito.mock(Category.class);
+        Mockito.when(categoryRepository.findById(Mockito.anyString())).thenReturn(Optional.of(mockCategory));
+        Mockito.when(mockCategory.getName()).thenReturn("TestCategory");
+        Mockito.when(mockNote.getTitle()).thenReturn("TestTitle");
+        Mockito.when(mockNote.getCategory()).thenReturn(mockCategory);
+        Mockito.when(mockNote.getContent()).thenReturn("TestContent");
+        noteService.deleteNote(request);
         Mockito.verify(noteRepository, Mockito.times(1)).deleteById(mockNote.getId());
     }
 
     @Test
+    void deleteNoteCategoryNotFoundFailedTest() {
+        final Note mockNote = Mockito.mock(Note.class);
+        Mockito.when(mockNote.getId()).thenReturn(0L);
+        Mockito.when(noteRepository.findAllByTitleAndCategoryAndContent(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(Optional.of(mockNote));
+        final DeleteNoteRequest request = new DeleteNoteRequest("TestTitle", "TestCategory", "TestContent");
+        Mockito.when(categoryRepository.findById(Mockito.anyString())).thenReturn(Optional.empty());
+        assertThrows(CategoryNotFoundException.class, () -> noteService.deleteNote(request));
+        Mockito.verify(noteRepository, Mockito.times(0)).deleteById(mockNote.getId());
+    }
+
+    @Test
     void deleteNoteFailedTest() {
+        final String title = "TestTitle";
         final Category category = new Category("Test Category");
         final String content = "Test Content";
-        final Date createdAt = new Date();
-        Mockito.when(noteRepository.findByCategoryAndContentAndCreatedAt(category, content, createdAt))
+        Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.of(category));
+        Mockito.when(noteRepository.findAllByTitleAndCategoryAndContent(title, category, content))
                 .thenReturn(Optional.empty());
-        Assertions.assertThrows(NoteNotFoundException.class, () -> noteService.deleteNote(category, content, createdAt));
+        final DeleteNoteRequest request = new DeleteNoteRequest(title, category.getName(), content);
+        Assertions.assertThrows(NoteNotFoundException.class, () -> noteService.deleteNote(request));
         Mockito.verify(noteRepository, Mockito.times(0)).deleteById(Mockito.anyLong());
     }
 
     @Test
     void findNotesByAllTagsSuccessTest() {
-        final Set<Tag> tags = Set.of(new Tag("Test Tag1"), new Tag("Test Tag2"));
+        final Set<Tag> tags = Set.of(new Tag("TestTag1"), new Tag("TestTag2"));
         final Category mockCategory = Mockito.mock(Category.class);
         final Date date = new Date();
-        final List<Note> noteDTOS = List.of(
+        final List<Note> noteResponse = List.of(
                 new Note(0L, "TestTitle1", "Test Content1", mockCategory, date, tags, date),
                 new Note(1L, "TestTitle2", "Test Content2", mockCategory, date, tags, date),
                 new Note(2L, "TestTitle3", "Test Content3", mockCategory, date, tags, date),
                 new Note(3L, "TestTitle4", "Test Content4", mockCategory, date, tags, date)
         );
-        Mockito.when(noteRepository.findAllByTags(tags, tags.size())).thenReturn(noteDTOS);
-        final List<NoteDTO> fetchedNoteDTOS = noteService.findByAllTags(tags);
-        assertNotNull(fetchedNoteDTOS);
-        assertEquals(noteDTOS.size(), fetchedNoteDTOS.size());
-        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.getFirst().tags);
-        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(1).tags);
-        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(2).tags);
-        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(3).tags);
-        Mockito.verify(noteRepository, Mockito.times(1)).findAllByTags(Mockito.anySet(), Mockito.anyLong());
+        final Set<String> request = Set.of("TestTag1", "TestTag2");
+        Mockito.when(tagRepository.findById("TestTag1")).thenReturn(Optional.of(new Tag("TestTag1", "RED")));
+        Mockito.when(tagRepository.findById("TestTag2")).thenReturn(Optional.of(new Tag("TestTag2", "YELLOW")));
+        Mockito.when(noteRepository.findByTagsContainingAll(tags, tags.size())).thenReturn(noteResponse);
+        final List<NoteResponse> fetchedNoteResponses = noteService.findByAllTags(request);
+        assertNotNull(fetchedNoteResponses);
+        assertEquals(noteResponse.size(), fetchedNoteResponses.size());
+        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteResponses.getFirst().tags);
+        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteResponses.get(1).tags);
+        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteResponses.get(2).tags);
+        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteResponses.get(3).tags);
+        Mockito.verify(noteRepository, Mockito.times(1)).findByTagsContainingAll(Mockito.anySet(), Mockito.anyLong());
     }
 
     @Test
     void findNotesByAllTagsEmptySetSuccessTest() {
-        final List<NoteDTO> fetchedNoteDTOS = noteService.findByAllTags(Set.of());
-        assertNotNull(fetchedNoteDTOS);
-        assertTrue(fetchedNoteDTOS.isEmpty());
-        Mockito.verify(noteRepository, Mockito.times(0)).findAllByTags(Mockito.anySet(), Mockito.anyLong());
-    }
-
-    @Test
-    void findNotesByAnyTagsSuccessTest() {
-        final Tag tag1 = new Tag("Test Tag1");
-        final Tag tag2 = new Tag("Test Tag2");
-        final Tag tag3 = new Tag("Test Tag3");
-        final Set<Tag> tags = Set.of(tag1, tag2, tag3);
-        final Category mockCategory = Mockito.mock(Category.class);
-        final Date date = new Date();
-        final List<Note> noteDTOS = List.of(
-                new Note(0L, "TestTitle1", "Test Content1", mockCategory, date, Set.of(tag1, tag2), date),
-                new Note(1L, "TestTitle2", "Test Content2", mockCategory, date, Set.of(tag1, tag3), date),
-                new Note(2L, "TestTitle3", "Test Content3", mockCategory, date, Set.of(tag1), date),
-                new Note(3L, "TestTitle4", "Test Content4", mockCategory, date, Set.of(tag3), date),
-                new Note(4L, "TestTitle5", "Test Content5", mockCategory, date, tags, date)
-        );
-
-        Mockito.when(noteRepository.getAllByTagsIn(tags)).thenReturn(noteDTOS);
-        final List<NoteDTO> fetchedNoteDTOS = noteService.findByAnyTag(tags);
-        assertNotNull(fetchedNoteDTOS);
-        assertEquals(noteDTOS.size(), fetchedNoteDTOS.size());
-        assertEquals(Set.of(tag1, tag2).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.getFirst().tags);
-        assertEquals(Set.of(tag1, tag3).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(1).tags);
-        assertEquals(Set.of(tag1).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(2).tags);
-        assertEquals(Set.of(tag3).stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(3).tags);
-        assertEquals(tags.stream().map(Tag::getTag).collect(Collectors.toSet()), fetchedNoteDTOS.get(4).tags);
-        Mockito.verify(noteRepository, Mockito.times(1)).getAllByTagsIn(Mockito.anySet());
-    }
-
-    @Test
-    void findNotesByAnyTagsEmptySetSuccessTest() {
-        final List<NoteDTO> fetchedNoteDTOS = noteService.findByAnyTag(Set.of());
-        assertNotNull(fetchedNoteDTOS);
-        assertTrue(fetchedNoteDTOS.isEmpty());
-        Mockito.verify(noteRepository, Mockito.times(0)).getAllByTagsIn(Mockito.anySet());
+        final List<NoteResponse> fetchedNoteResponses = noteService.findByAllTags(Set.of());
+        assertNotNull(fetchedNoteResponses);
+        assertTrue(fetchedNoteResponses.isEmpty());
+        Mockito.verify(noteRepository, Mockito.times(0)).findByTagsContainingAll(Mockito.anySet(), Mockito.anyLong());
     }
 }

@@ -2,7 +2,7 @@ package com.github.wezzen.insight.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wezzen.insight.dto.request.CreateTagRequest;
-import com.github.wezzen.insight.dto.response.TagDTO;
+import com.github.wezzen.insight.dto.response.TagResponse;
 import com.github.wezzen.insight.service.TagService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,10 +59,10 @@ class TagControllerTest {
 
     @Test
     void getTagsTest() throws Exception {
-        final List<TagDTO> tagsDTOS = List.of(
-                new TagDTO("TestTag1", "RED"),
-                new TagDTO("TestTag2", "BLACK"),
-                new TagDTO("TestTag3", "ORANGE")
+        final List<TagResponse> tagsDTOS = List.of(
+                new TagResponse("TestTag1", "RED"),
+                new TagResponse("TestTag2", "BLACK"),
+                new TagResponse("TestTag3", "ORANGE")
         );
 
         Mockito.when(tagService.getAllTags()).thenReturn(tagsDTOS);
@@ -79,33 +79,33 @@ class TagControllerTest {
 
     @Test
     void createTagTest() throws Exception {
-        final TagDTO tagDTO = new TagDTO("TestTag1", "RED");
-        Mockito.when(tagService.createTag(Mockito.anyString())).thenReturn(tagDTO);
-        final CreateTagRequest request = new CreateTagRequest(tagDTO.tag);
+        final TagResponse tagResponse = new TagResponse("TestTag1", "RED");
+        final CreateTagRequest request = new CreateTagRequest(tagResponse.tag);
+        Mockito.when(tagService.createTag(request)).thenReturn(tagResponse);
 
         mockMvc.perform(post("/tags").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.tag").value(tagDTO.tag));
+                .andExpect(jsonPath("$.tag").value(tagResponse.tag));
 
-        Mockito.verify(tagService, Mockito.times(1)).createTag(tagDTO.tag);
+        Mockito.verify(tagService, Mockito.times(1)).createTag(request);
     }
 
     @Test
     void deleteTagTest() throws Exception {
-        final TagDTO tagDTO = new TagDTO("TestTag1", "RED");
-        Mockito.when(tagService.createTag(Mockito.anyString())).thenReturn(tagDTO);
-        final CreateTagRequest request = new CreateTagRequest(tagDTO.tag);
+        final TagResponse tagResponse = new TagResponse("TestTag1", "RED");
+        final CreateTagRequest request = new CreateTagRequest(tagResponse.tag);
+        Mockito.when(tagService.createTag(request)).thenReturn(tagResponse);
 
         mockMvc.perform(post("/tags").contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.tag").value(tagDTO.tag));
+                .andExpect(jsonPath("$.tag").value(tagResponse.tag));
 
-        Mockito.verify(tagService, Mockito.times(1)).createTag(tagDTO.tag);
+        Mockito.verify(tagService, Mockito.times(1)).createTag(request);
 
-        mockMvc.perform(delete("/tags/{tag}", tagDTO.tag)).andExpect(status().isNoContent());
-        Mockito.verify(tagService, Mockito.times(1)).deleteTag(tagDTO.tag);
+        mockMvc.perform(delete("/tags/{tag}", tagResponse.tag)).andExpect(status().isNoContent());
+        Mockito.verify(tagService, Mockito.times(1)).deleteTag(tagResponse.tag);
     }
 
 }

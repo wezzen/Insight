@@ -1,6 +1,7 @@
 package com.github.wezzen.insight.service;
 
-import com.github.wezzen.insight.dto.response.CategoryDTO;
+import com.github.wezzen.insight.dto.request.CreateCategoryRequest;
+import com.github.wezzen.insight.dto.response.CategoryResponse;
 import com.github.wezzen.insight.model.Note;
 import com.github.wezzen.insight.service.exception.CategoryNotFoundException;
 import com.github.wezzen.insight.service.exception.DeleteNotEmptyCategoryException;
@@ -25,17 +26,17 @@ class CategoryServiceTest {
     @Test
     void convertTest() {
         final Category category = new Category("TestCategory");
-        final CategoryDTO dto = categoryService.convert(category);
+        final CategoryResponse dto = categoryService.convert(category);
         assertEquals(category.getName(), dto.name);
     }
 
     @Test
     void createCategorySuccessTest() {
-        final Category category = new Category("Test Category");
-        Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.empty());
-        Mockito.when(categoryRepository.save(category)).thenReturn(category);
-        final CategoryDTO createdCategory = categoryService.createCategory(category.getName());
-
+        final CreateCategoryRequest request = new CreateCategoryRequest("TestCategory");
+        final Category category = new Category(request.name);
+        Mockito.when(categoryRepository.findById(request.name)).thenReturn(Optional.empty());
+        Mockito.when(categoryRepository.save(Mockito.any(Category.class))).thenReturn(category);
+        final CategoryResponse createdCategory = categoryService.createCategory(request);
         assertNotNull(createdCategory);
         assertEquals(category.getName(), createdCategory.name);
         Mockito.verify(categoryRepository, Mockito.times(1)).save(category);
@@ -43,9 +44,10 @@ class CategoryServiceTest {
 
     @Test
     void createCategoryFailedTest() {
-        final Category category = new Category("Test Category");
-        Mockito.when(categoryRepository.findById(category.getName())).thenReturn(Optional.of(category));
-        assertThrows(DuplicateCategoryException.class, () -> categoryService.createCategory(category.getName()));
+        final CreateCategoryRequest request = new CreateCategoryRequest("TestCategory");
+        final Category category = new Category(request.name);
+        Mockito.when(categoryRepository.findById(request.name)).thenReturn(Optional.of(category));
+        assertThrows(DuplicateCategoryException.class, () -> categoryService.createCategory(request));
         Mockito.verify(categoryRepository, Mockito.times(0)).save(category);
     }
 
@@ -57,7 +59,7 @@ class CategoryServiceTest {
                 new Category("Test Category3")
         );
         Mockito.when(categoryRepository.findAll()).thenReturn(categories);
-        final List<CategoryDTO> fetchedCategories = categoryService.getAllCategories();
+        final List<CategoryResponse> fetchedCategories = categoryService.getAllCategories();
         assertNotNull(fetchedCategories);
         assertEquals(categories.size(), fetchedCategories.size());
         assertEquals(categories.get(0).getName(), fetchedCategories.get(0).name);

@@ -1,6 +1,7 @@
 package com.github.wezzen.insight.service;
 
-import com.github.wezzen.insight.dto.response.TagDTO;
+import com.github.wezzen.insight.dto.request.CreateTagRequest;
+import com.github.wezzen.insight.dto.response.TagResponse;
 import com.github.wezzen.insight.model.Note;
 import com.github.wezzen.insight.model.Tag;
 import com.github.wezzen.insight.repository.TagRepository;
@@ -28,18 +29,19 @@ class TagServiceTest {
     @Test
     void convertTest() {
         final String color = colorGenerator.generateSoftColor();
-        final Tag tag = new Tag("TesTag", color);
-        final TagDTO dto = tagService.convert(tag);
+        final Tag tag = new Tag("TestTag", color);
+        final TagResponse dto = tagService.convert(tag);
         assertEquals(tag.getTag(), dto.tag);
         assertEquals(tag.getColor(), dto.color);
     }
 
     @Test
     void createTagSuccessTest() {
-        final Tag tag = new Tag("Test Tag", "RED");
-        Mockito.when(tagRepository.findById(tag.getTag())).thenReturn(Optional.empty());
+        final CreateTagRequest request = new CreateTagRequest("TestTag");
+        final Tag tag = new Tag(request.tag, "RED");
+        Mockito.when(tagRepository.findById(request.tag)).thenReturn(Optional.empty());
         Mockito.when(tagRepository.save(tag)).thenReturn(tag);
-        final TagDTO createdTag = tagService.createTag(tag.getTag());
+        final TagResponse createdTag = tagService.createTag(request);
 
         assertNotNull(createdTag);
         assertEquals(tag.getTag(), createdTag.tag);
@@ -49,12 +51,11 @@ class TagServiceTest {
 
     @Test
     void createDuplicateTagFailedTest() {
-        final Tag tag1 = new Tag("Test Tag", "RED");
-        final Tag tag2 = new Tag("Test Tag", "BLACK");
-        Mockito.when(tagRepository.findById(tag1.getTag())).thenReturn(Optional.of(tag1));
-        assertThrows(DuplicateTagException.class, () -> tagService.createTag(tag1.getTag()));
-        assertThrows(DuplicateTagException.class, () -> tagService.createTag(tag2.getTag()));
-        Mockito.verify(tagRepository, Mockito.times(0)).save(tag2);
+        final Tag tag = new Tag("Test Tag", "RED");
+        final CreateTagRequest request = new CreateTagRequest("Test Tag");
+        Mockito.when(tagRepository.findById(request.tag)).thenReturn(Optional.of(tag));
+        assertThrows(DuplicateTagException.class, () -> tagService.createTag(request));
+        Mockito.verify(tagRepository, Mockito.times(0)).save(tag);
     }
 
     @Test
@@ -65,7 +66,7 @@ class TagServiceTest {
                 new Tag("Test Tag3", "YELLOW")
         );
         Mockito.when(tagRepository.findAll()).thenReturn(tags);
-        final List<TagDTO> fetchedTags = tagService.getAllTags();
+        final List<TagResponse> fetchedTags = tagService.getAllTags();
         assertNotNull(fetchedTags);
         assertEquals(tags.size(), fetchedTags.size());
         assertEquals(tags.get(0).getTag(), fetchedTags.get(0).tag);

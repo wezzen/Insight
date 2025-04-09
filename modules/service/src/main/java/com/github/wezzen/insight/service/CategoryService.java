@@ -1,6 +1,7 @@
 package com.github.wezzen.insight.service;
 
-import com.github.wezzen.insight.dto.response.CategoryDTO;
+import com.github.wezzen.insight.dto.request.CreateCategoryRequest;
+import com.github.wezzen.insight.dto.response.CategoryResponse;
 import com.github.wezzen.insight.model.Category;
 import com.github.wezzen.insight.model.Note;
 import com.github.wezzen.insight.repository.CategoryRepository;
@@ -27,14 +28,14 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryDTO createCategory(final String name) {
-        if (categoryRepository.findById(name).isPresent()) {
-            throw new DuplicateCategoryException("Category with name " + name + " already exists");
+    public CategoryResponse createCategory(final CreateCategoryRequest request) {
+        if (categoryRepository.findById(request.name).isPresent()) {
+            throw new DuplicateCategoryException("Category with name " + request + " already exists");
         }
-        return convert(categoryRepository.save(new Category(name)));
+        return convert(categoryRepository.save(new Category(request.name)));
     }
 
-    public List<CategoryDTO> getAllCategories() {
+    public List<CategoryResponse> getAllCategories() {
         return StreamSupport.stream(categoryRepository.findAll().spliterator(), false).map(this::convert).toList();
     }
 
@@ -51,7 +52,7 @@ public class CategoryService {
         categoryRepository.deleteById(name);
     }
 
-    protected CategoryDTO convert(final Category category) {
-        return new CategoryDTO(category.getName());
+    protected CategoryResponse convert(final Category category) {
+        return new CategoryResponse(category.getName());
     }
 }

@@ -9,16 +9,16 @@ import org.springframework.data.annotation.Immutable;
 @EqualsAndHashCode
 public final class DeleteNoteRequest {
 
+    public final String title;
     public final String category;
     public final String content;
-    public final long createdAt;
 
     @JsonCreator
-    public DeleteNoteRequest(@JsonProperty("category") final String category,
-                             @JsonProperty("content") final String content,
-                             @JsonProperty("createdAt") final long createdAt) {
+    public DeleteNoteRequest(@JsonProperty("title") final String title,
+                             @JsonProperty("category") final String category,
+                             @JsonProperty("content") final String content) {
+        this.title = title;
         this.category = category;
         this.content = content;
-        this.createdAt = createdAt;
     }
 }

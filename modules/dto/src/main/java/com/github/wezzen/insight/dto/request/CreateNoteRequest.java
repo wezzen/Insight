@@ -10,16 +10,19 @@ import java.util.Set;
 @Immutable
 @EqualsAndHashCode
 public final class CreateNoteRequest {
+    public final String title;
     public final String category;
     public final String content;
     public final Set<String> tags;
     public final long reminder;
 
     @JsonCreator
-    public CreateNoteRequest(@JsonProperty("category") final String category,
+    public CreateNoteRequest(@JsonProperty("title") final String title,
+                             @JsonProperty("category") final String category,
                              @JsonProperty("content") final String content,
                              @JsonProperty("tags") final Set<String> tags,
                              @JsonProperty("reminder") final long reminder) {
+        this.title = title;
         this.category = category;
         this.content = content;
         this.tags = tags;
