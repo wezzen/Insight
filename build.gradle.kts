@@ -33,7 +33,7 @@ allprojects {
         implementation("org.postgresql:postgresql:42.7.5")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.5")
-        testImplementation("nl.jqno.equalsverifier:equalsverifier:3.19.3")
+        testImplementation("nl.jqno.equalsverifier:equalsverifier:4.0")
         testImplementation(platform("org.junit:junit-bom:5.12.2"))
         testImplementation("org.junit.jupiter:junit-jupiter")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
