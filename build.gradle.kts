@@ -30,7 +30,7 @@ allprojects {
         implementation("org.springframework.boot:spring-boot-starter-web:3.4.5")
         implementation("org.springframework.boot:spring-boot-starter-data-jpa:3.5.0")
 
-        implementation("org.postgresql:postgresql:42.7.5")
+        implementation("org.postgresql:postgresql:42.7.6")
 
         testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.5")
         testImplementation("nl.jqno.equalsverifier:equalsverifier:4.0")
