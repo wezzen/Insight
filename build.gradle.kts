@@ -34,7 +34,7 @@ allprojects {
 
         testImplementation("org.springframework.boot:spring-boot-starter-test:3.4.5")
         testImplementation("nl.jqno.equalsverifier:equalsverifier:4.0")
-        testImplementation(platform("org.junit:junit-bom:5.12.2"))
+        testImplementation(platform("org.junit:junit-bom:5.13.1"))
         testImplementation("org.junit.jupiter:junit-jupiter")
         testRuntimeOnly("org.junit.platform:junit-platform-launcher")
         testImplementation("org.mockito:mockito-core:5.17.0")
